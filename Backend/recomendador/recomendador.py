@@ -1,5 +1,12 @@
 import psycopg2
 import sys
+from sklearn.preprocessing import LabelEncoder
+import numpy as np
+import pandas as pd
+import pickle
+import json
+
+'''Obtención respuestas desde la bbdd para pasar a los recomendadores'''
 
 def fetch_responses(id):
     # Conexión a PostgreSQL
@@ -33,7 +40,9 @@ def fetch_responses(id):
             'contexto': row[9]
         }
 
-def recommend(data):
+'''Recomendador por reglas'''
+
+def recommend_rule(data):
     tipo_datos = data.get('tipo_datos')
     n_dimensiones = data.get('n_dimensiones')
     ordenadas = data.get('ordenadas')
@@ -333,13 +342,73 @@ def recommend(data):
 
     return 'No suggestion available'
 
+'''Recomendador IA'''
+
+# Función para sugerir tipo de gráfico
+def recommend_AI(features, modelo, label_encoder_y, encoders, required_columns):
+    input_data = []
+    for col in required_columns:
+        if col in features:
+            value = features[col]
+
+            # Verificar si la característica es categórica y usar el codificador adecuado
+            if col in encoders:  # Si existe un encoder para la columna
+                if pd.isna(value) or value not in encoders[col].classes_:
+                    raise ValueError(f"Valor inválido o no visto en la columna '{col}': {value}")
+                # Codificar la característica
+                encoded_value = encoders[col].transform([value])[0]
+                input_data.append(encoded_value)
+            else:
+                # Si la columna no es categórica, simplemente la agregamos
+                input_data.append(value)
+        else:
+            raise ValueError(f"Falta la característica '{col}' en las características proporcionadas.")
+    
+    input_array = np.array(input_data).reshape(1, -1)
+    predicted = modelo.predict(input_array)
+    #return input_array
+    return label_encoder_y.inverse_transform(predicted)[0]
+
+'''Llamada pasando id y ejecucion funciones'''
 
 if __name__ == "__main__":
     id = sys.argv[1]  # Obtener el ID de las respuestas desde los argumentos de la línea de comandos
     try:
         responses = fetch_responses(id)
-        recommendation = recommend(responses)
-        print(recommendation)  # La recomendación será enviada de vuelta a Node.js
+        # Generar ambas recomendaciones
+        recommendation_rule = recommend_rule(responses)
+
+        required_columns = [ 'n_dimensiones' ,
+            'tipo_datos',
+            'ordenadas',
+            'n_grupos_alto',
+            'relacion',
+            'obs_grupo',
+            'proposito',
+            'dataset_size',
+            'contexto']  # Definir las columnas requeridas
+        # prediccion usando modelo entrenado y guardado
+        model_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\XGBOOST_F.sav"
+        encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\feature_encoders.sav"
+        label_encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\label_encoder_y.sav"
+        # Cargar el modelo con pickle
+        loaded_model = pickle.load(open(model_path, 'rb'))
+        # Cargar los encoders
+        encoders = pickle.load(open(encoder_path, 'rb'))
+        label_encoder_y = pickle.load(open(label_encoder_path, 'rb'))
+        recommendation_ai = recommend_AI(responses,loaded_model, label_encoder_y, encoders, required_columns)
+
+        # Empaquetamos ambas recomendaciones en un diccionario
+        recommendations = {
+            "rule_based": recommendation_rule,
+            "ai_based": recommendation_ai
+        }
+
+        # Convertimos el diccionario a JSON y lo imprimimos para enviarlo de vuelta
+        print(json.dumps(recommendations))
+
+        #recommendation = recommend_rule(responses)
+        #print(recommendation)  # La recomendación será enviada de vuelta a Node.js
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

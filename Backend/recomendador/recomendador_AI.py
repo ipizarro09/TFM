@@ -41,7 +41,7 @@ X = df[expected_columns[1:-1]].copy()  # Todas las columnas excepto 'Gráfico' y
 y = df['Gráfico'].copy()  # Columna objetivo
 
 
-# In[117]:
+# In[164]:
 
 
 # desde postgresql
@@ -107,7 +107,7 @@ y = df['grafico_recomendado'].copy()  # Columna objetivo es grafico_recomendado
 #print(y)
 
 
-# In[118]:
+# In[165]:
 
 
 #Preparación de datos I - División datos en Train & Test
@@ -118,7 +118,7 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42,stratify=y)
 
 
-# In[119]:
+# In[158]:
 
 
 # visualizamos las clases antes del oversampling en el conjunto de training
@@ -145,7 +145,7 @@ plt.title('Frecuencia por clase', fontsize=14)
 plt.show()
 
 
-# In[120]:
+# In[159]:
 
 
 #preparación de datos II
@@ -202,7 +202,7 @@ plt.title('Frecuencia por clase en Train con sobremuestreo', fontsize=14)
 plt.show()
 
 
-# In[121]:
+# In[167]:
 
 
 # preparación de datos III - codificamos las caracteristicas
@@ -234,65 +234,7 @@ y_test_encoded = label_encoder_y.transform(y_test)
 #print(y_test_encoded)
 
 
-# In[124]:
-
-
-import xgboost as xgb
-from sklearn.model_selection import GridSearchCV
-from sklearn import metrics
-from sklearn.metrics import make_scorer, accuracy_score, precision_score, recall_score, f1_score
-import json
-
-def to_string(l):
-  s = ' '
-  for ele in l:
-    s = s + ' '.join(str(ele))
-  return(s)
-
-def build_output(duracion, accuracy, importance, parametros):
-  df = pd.DataFrame(columns=['Fecha_Lanzamiento','Accuracy','Parametros','Importancia','Tiempo_Ejecucion','Modelo'])
-  
-  # Append rows in Empty Dataframe by adding dictionaries
-  df = df.append({'Fecha_Lanzamiento':datetime.datetime.now(),'Accuracy': accuracy,
-                  'Parametros':json.dumps(parametros),'Importancia':to_string(importance),'Tiempo_Ejecucion':duracion, 'Modelo': 'XGBoost'}, ignore_index=True)
-  return(df)
-
-def train_pred(X, Xtra, ytra, Xtest, ytest, clf):
-    # Fitting & Tiempo
-    start = time.time()
-    
-    #Buscar Parametros optimos
-    clf = xgb.XGBClassifier()
-    clf.fit(Xtra, ytra)
-
-    duracion = time.time()-start
-    parametros = clf.get_params(deep=True)
-    
-    # Prediccion
-    y_pred = clf.predict(Xtest)
-
-    # **Accuracy**
-   
-    accuracy = accuracy_score(ytest, y_pred.round(), normalize = True)   
-    
-    # **Importancia**
-    names = X.columns
-    importance = sorted(zip(map(lambda x: round(x, 4), clf.feature_importances_), names),
-                 reverse=True)
-                     
-    return(duracion, accuracy, clf,importance, parametros)
-
-#XGBOOST
-durf, accuracyf, clff, importancef, parametrosf = train_pred(X, X_train_resampled_encoded, y_train_resampled_encoded, X_test_encoded, y_test_encoded, xgb.XGBClassifier())
-pickle.dump(clff, open(r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\XGBOOST_F.sav", 'wb'))
-                       
-#Tablas salida
-df_modelo_f = build_output(durf, accuracyf,  importancef, parametrosf)
-
-print(df_modelo_f)
-
-
-# In[133]:
+# In[168]:
 
 
 import xgboost as xgb
@@ -362,7 +304,17 @@ dur, accuracy, clf, importance, parametros = train_pred(
 )
 
 # Guardar el modelo entrenado
-pickle.dump(clff, open(r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\XGBOOST_F.sav", 'wb'))
+pickle.dump(clf, open(r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\XGBOOST_F.sav", 'wb'))
+
+if 'encoders' in globals() and 'label_encoder_y' in globals():
+    # Guardar encoders de las características
+    with open(r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\feature_encoders.sav", 'wb') as encoders_file:
+        pickle.dump(encoders, encoders_file)
+    # Guardar encoder de las etiquetas
+    with open(r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\label_encoder_y.sav", 'wb') as label_encoder_file:
+        pickle.dump(label_encoder_y, label_encoder_file)  
+else:
+    print("Encoders o label_encoder_y no están definidos.")
 
 # Construir la tabla de salida
 df_modelo_f = build_output(dur, accuracy, importance, parametros)
@@ -381,15 +333,21 @@ print("\nImportancia de Características:")
 print(importancef)
 
 
-# In[127]:
+# In[169]:
 
 
 # prediccion usando modelo entrenado y guardado
 
 model_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\XGBOOST_F.sav"
+encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\feature_encoders.sav"
+label_encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\label_encoder_y.sav"
 
 # Cargar el modelo con pickle
 loaded_model = pickle.load(open(model_path, 'rb'))
+
+# Cargar los encoders
+encoders = pickle.load(open(encoder_path, 'rb'))
+label_encoder_y = pickle.load(open(label_encoder_path, 'rb'))
 
 # Evaluar el modelo
 y_pred = loaded_model.predict(X_test_encoded)
@@ -432,7 +390,7 @@ suggested_chart = suggest_chart(example_features,loaded_model)
 print(f"El gráfico sugerido es: {suggested_chart}")
 
 
-# In[151]:
+# In[174]:
 
 
 # Evaluacion modelo
@@ -450,8 +408,10 @@ warnings.filterwarnings('ignore', message='^.*will change.*$', category=FutureWa
 modelo=clf
 titulo='XGBoost'
 
+df_scores = pd.DataFrame()
+
 if 'df_scores' not in globals():
-    df_scores = pd.DataFrame(columns=['Model', 'Accuracy', 'Precision', 'Specificity', 'F1 Score', 'Avg CV Accuracy', 'Standard Deviation of CV Accuracy'])
+    df_scores = pd.DataFrame(columns=['Model', 'Accuracy', 'Precision','Recall', 'Specificity', 'F1 Score', 'Avg CV Accuracy', 'Standard Deviation of CV Accuracy'])
 
 def plot_matrizconfusion(titulo, cm):
     # La figura y los ejes
@@ -556,14 +516,13 @@ def entrenamiento_prediccion_evaluacion(modelo,titulo,accuracy_cv,accuracy_cv_st
   print(f"F1 score set test {titulo}   =  {f1:.2%}")
   print("\n")
 
-  lscores = [(accuracy, prec, specificity_avg, f1, accuracy_cv, accuracy_cv_std)]
-  global df_scores
-  #df_scores = pd.DataFrame(data = lscores, columns=['Accuracy','Precision','Specificity', 'F1 Score', 'Avg CV Accuracy', 'Standard Deviation of CV Accuracy'])
-  #df_scores.insert(0,'Model', titulo)
-  if 'df_scores' not in globals():
-    df_scores = pd.DataFrame(columns=['Model', 'Accuracy', 'Precision', 'Specificity', 'F1 Score', 'Avg CV Accuracy', 'Standard Deviation of CV Accuracy'])
+  lscores = [(accuracy, prec, recall, specificity_avg, f1, accuracy_cv, accuracy_cv_std)]
 
-  nuevoregistro = pd.DataFrame(data=lscores, columns=['Accuracy', 'Precision', 'Specificity', 'F1 Score', 'Avg CV Accuracy', 'Standard Deviation of CV Accuracy'])
+  global df_scores
+  if 'df_scores' not in globals():
+    df_scores = pd.DataFrame(columns=['Model', 'Accuracy', 'Precision', 'Recall', 'Specificity', 'F1 Score', 'Avg CV Accuracy', 'Standard Deviation of CV Accuracy'])
+
+  nuevoregistro = pd.DataFrame(data=lscores, columns=['Accuracy', 'Precision', 'Recall', 'Specificity', 'F1 Score', 'Avg CV Accuracy', 'Standard Deviation of CV Accuracy'])
   nuevoregistro.insert(0, 'Model', titulo)
   df_scores = pd.concat([df_scores, nuevoregistro], ignore_index=True)
 
@@ -579,6 +538,76 @@ def entrenamiento_prediccion_evaluacion(modelo,titulo,accuracy_cv,accuracy_cv_st
 
 entrenamiento_prediccion_evaluacion(modelo,titulo,accuracy_cv,accuracy_cv_std,X_train_resampled_encoded, y_train_resampled_encoded, X_test_encoded, y_test_encoded)
 
+
+
+# In[180]:
+
+
+# Integracion con Herramienta 
+
+required_columns = [ 'n_dimensiones' ,
+            'tipo_datos',
+            'ordenadas',
+            'n_grupos_alto',
+            'relacion',
+            'obs_grupo',
+            'proposito',
+            'dataset_size',
+            'contexto']  # Definir las columnas requeridas
+
+# prediccion usando modelo entrenado y guardado
+
+model_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\XGBOOST_F.sav"
+encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\feature_encoders.sav"
+label_encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\label_encoder_y.sav"
+
+# Cargar el modelo con pickle
+loaded_model = pickle.load(open(model_path, 'rb'))
+# Cargar los encoders
+encoders = pickle.load(open(encoder_path, 'rb'))
+label_encoder_y = pickle.load(open(label_encoder_path, 'rb'))
+
+# Función para sugerir tipo de gráfico
+def recommend_AI(features, modelo, label_encoder_y, encoders, required_columns):
+    input_data = []
+    for col in required_columns:
+        if col in features:
+            value = features[col]
+
+            # Verificar si la característica es categórica y usar el codificador adecuado
+            if col in encoders:  # Si existe un encoder para la columna
+                if pd.isna(value) or value not in encoders[col].classes_:
+                    raise ValueError(f"Valor inválido o no visto en la columna '{col}': {value}")
+                # Codificar la característica
+                encoded_value = encoders[col].transform([value])[0]
+                input_data.append(encoded_value)
+            else:
+                # Si la columna no es categórica, simplemente la agregamos
+                input_data.append(value)
+        else:
+            raise ValueError(f"Falta la característica '{col}' en las características proporcionadas.")
+    
+    input_array = np.array(input_data).reshape(1, -1)
+    predicted = modelo.predict(input_array)
+    #return input_array
+    return label_encoder_y.inverse_transform(predicted)[0]
+
+
+# Ejemplo de uso
+example_features = {
+    'n_dimensiones': '2D',
+    'tipo_datos': 'Numeric',
+    'ordenadas': 'No',
+    'n_grupos_alto': 'Not applicable',
+    'relacion': 'Not applicable',
+    'obs_grupo': 'Not applicable',
+    'proposito': 'Distribution',
+    'dataset_size': 'Medium',
+    'contexto': 'Technical presentation'
+}
+
+suggested_chart = recommend_AI(example_features,loaded_model,label_encoder_y, encoders, required_columns)
+print(f"El gráfico sugerido es: {suggested_chart}")
 
 
 # In[ ]:

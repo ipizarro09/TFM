@@ -1,5 +1,4 @@
 import React from 'react';
-import './Questionnaire.css';
 
 const Questionnaire = ({
   tipoDatos,
@@ -24,7 +23,7 @@ const Questionnaire = ({
 
         // Pregunta de si las variables están ordenadas
         questions.push(
-          <div key="ordered">
+          <div key="ordered" className="question-section">
             <h4>Are variables ordered?</h4>
             <select value={ordenadas} onChange={(e) => setOrdenadas(e.target.value)}>
               <option value="Yes">Yes</option>
@@ -34,9 +33,9 @@ const Questionnaire = ({
         );
 
         // Condición adicional para mostrar la segunda pregunta sobre su relacion
-        if (nDimensiones === '3D+' && ordenadas === 'No' && proposito == 'Part-to-whole') {
+        if (nDimensiones === '3D+' && ordenadas === 'No' && proposito === 'Part-to-whole') {
           questions.push(
-            <div key="relation">
+            <div key="relation"  className="question-section">
               <h4>Relation between variables?</h4>
               <select value={relacion} onChange={(e) => setRelacion(e.target.value)}>
                 <option value="Subgroup">Subgroup</option>
@@ -50,9 +49,9 @@ const Questionnaire = ({
 
         case 'Categorical':
 
-        if (nDimensiones === '1D'  && proposito == 'Part-to-whole') {
+        if (nDimensiones === '1D'  && proposito === 'Part-to-whole') {
           return (
-            <div key="relation">
+            <div key="relation" className="question-section">
               <h4>Relation between variables?</h4>
               <select value={relacion} onChange={(e) => setRelacion(e.target.value)}>
                 <option value="Subgroup">Subgroup</option>
@@ -65,7 +64,7 @@ const Questionnaire = ({
           if (nDimensiones === '2D' || nDimensiones === '3D' || nDimensiones === '3D+') {
             return (
               <div>
-                <div>
+                <div className="question-section">
                   <h4>Relation between variables?</h4>
                   <select value={relacion} onChange={(e) => setRelacion(e.target.value)}>
                     <option value="Independent">Independent</option>
@@ -74,8 +73,8 @@ const Questionnaire = ({
                     <option value="Adjacency">Adjacency</option>
                   </select>
                 </div>
-                {relacion == 'Subgroup' && (
-                <div>
+                {relacion === 'Subgroup' && (
+                <div  className="question-section">
                   <h4>Do you forsee a high number of groups?</h4>
                   <select onChange={(e) => setNGruposAlto(e.target.value)}>
                     <option value="Yes">Yes</option>
@@ -94,7 +93,7 @@ const Questionnaire = ({
         return (
           <div>
             {/* Pregunta sobre observaciones por grupo */}
-            <div key="obs_grupo">
+            <div key="obs_grupo" className="question-section">
               <h4>One or more observations by group?</h4>
               <select value={obsGrupo} onChange={(e) => setObsGrupo(e.target.value)}>
                 <option value="One">One</option>
@@ -104,7 +103,7 @@ const Questionnaire = ({
 
             {/* Condicional: Si es 'One' y el propósito es 'Part-to-whole', pregunta sobre relación */}
             {obsGrupo === 'One' && proposito === 'Part-to-whole' && (
-              <div key="relation">
+              <div key="relation"  className="question-section">
                 <h4>Relation between variables?</h4>
                 <select value={relacion} onChange={(e) => setRelacion(e.target.value)}>
                   <option value="Subgroup">Subgroup</option>
@@ -119,7 +118,7 @@ const Questionnaire = ({
         return (
           <div>
             {/* Pregunta sobre observaciones por grupo */}
-            <div key="obs_grupo">
+            <div key="obs_grupo"  className="question-section">
               <h4>One or more observations by group?</h4>
               <select value={obsGrupo} onChange={(e) => setObsGrupo(e.target.value)}>
                 <option value="One">One</option>
@@ -129,7 +128,7 @@ const Questionnaire = ({
 
             {/* Condicional: Si es 'Several' pregunta sobre si están ordenadas */}
             {obsGrupo === 'Several' && (
-              <div key="ordered">
+              <div key="ordered"  className="question-section">
               <h4>Are variables ordered?</h4>
               <select value={ordenadas} onChange={(e) => setOrdenadas(e.target.value)}>
                 <option value="Yes">Yes</option>
@@ -137,8 +136,8 @@ const Questionnaire = ({
               </select>
             </div>
             )}
-            {obsGrupo === 'One' && (proposito == 'Part-to-whole' || proposito == 'Correlation') && (
-            <div key="n_grupos_alto">
+            {obsGrupo === 'One' && (proposito === 'Part-to-whole' || proposito === 'Correlation') && (
+            <div key="n_grupos_alto"  className="question-section">
               <h4>Do you foresee high number of groups?</h4>
               <select onChange={(e) => setNGruposAlto(e.target.value)}>
                 <option value="Yes">Yes</option>
@@ -154,7 +153,7 @@ const Questionnaire = ({
           return (
             <div>
               {/* Pregunta sobre relación entre variables */}
-              <div>
+              <div className="question-section">
                 <h4>Relation between variables?</h4>
                 <select value={relacion} onChange={(e) => setRelacion(e.target.value)}>
                   <option value="Nested">Nested</option>
@@ -165,7 +164,7 @@ const Questionnaire = ({
         
               {/* Pregunta sobre observaciones por grupo si la relación no es "Adjacency" */}
               {relacion !== 'Adjacency' && (
-                <div key="obs_grupo">
+                <div key="obs_grupo" className="question-section">
                   <h4>One or more observations by group?</h4>
                   <select value={obsGrupo} onChange={(e) => setObsGrupo(e.target.value)}>
                     <option value="One">One</option>
@@ -175,9 +174,9 @@ const Questionnaire = ({
               )}
         
               {/* Pregunta sobre número de grupos si se cumplen las condiciones */}
-              {relacion == 'Subgroup' && obsGrupo === 'One' && 
+              {relacion === 'Subgroup' && obsGrupo === 'One' && 
                (proposito === 'Part-to-whole' || proposito === 'Correlation') && (
-                <div key="n_grupos_alto">
+                <div key="n_grupos_alto" className="question-section">
                   <h4>Do you foresee a high number of groups?</h4>
                   <select onChange={(e) => setNGruposAlto(e.target.value)}>
                     <option value="Yes">Yes</option>
@@ -194,7 +193,7 @@ const Questionnaire = ({
     }
   };
 
-  return <div>{renderQuestions()}</div>;
+  return <div className="questionnaire-container">{renderQuestions()}</div>;
 };
 
 export default Questionnaire;

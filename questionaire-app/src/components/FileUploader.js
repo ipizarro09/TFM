@@ -23,7 +23,7 @@ const FileUploader = ({ onUpload }) => {
               // Expresión regular para detectar números en notación científica o decimal
               return /^-?\d+(\.\d+)?([eE][-+]?\d+)?$/.test(normalizedValue);
           });
-  
+          // Asignamos el tipo de columna si cumple isNumeric será Numeric sino Categorical
           columnTypes[column] = isNumeric ? 'Numeric' : 'Categorical';
         });
 
@@ -35,8 +35,20 @@ const FileUploader = ({ onUpload }) => {
   };
 
   return (
-    <div>
-      <input type="file" accept=".csv" onChange={handleFileChange} />
+    <div className="file-uploader-container">
+      <input 
+        type="file" 
+        id="file-upload" 
+        accept=".csv" 
+        onChange={handleFileChange} 
+        style={{ display: 'none' }} // Ocultamos el input original
+      />
+      <button 
+        className="file-upload-btn" 
+        onClick={() => document.getElementById('file-upload').click()}
+      >
+        Cargar dataset para visualizar
+      </button>
     </div>
   );
 };

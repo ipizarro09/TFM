@@ -13,7 +13,7 @@ const VariableSelector = ({ dataset, selectedVars, setSelectedVars }) => {
 
   return (
     <div>
-      <h3>Select Variables</h3>
+      <h4>Select Variables</h4>
       {Object.keys(dataset[0] || {}).map((varName) => (
         <label key={varName}>
           <input

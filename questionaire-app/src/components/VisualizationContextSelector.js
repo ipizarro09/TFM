@@ -3,7 +3,7 @@ import React from 'react';
 const VisualizationContextSelector = ({ onSelectContext }) => {
   return (
     <div>
-      <h3>Select Visualization Context</h3>
+      <h4>Select Visualization Context</h4>
       {['Technical presentation', 'Non technical presentation', 'Technical report','Non technical report', 'Exploration'].map((context) => (
         <label key={context}>
           <input

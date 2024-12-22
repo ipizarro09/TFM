@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 
 function DataTypeSelector({ tipoDatos, nDimensiones }) {
     return (
-      <div>
-        <h4>Tipo de Datos: {tipoDatos || "Not found"}</h4>
-        <h4>Número de Dimensiones: {nDimensiones || "Not found"}</h4>
+      <div className='message-container-group'>
+        <p className='message-container'><strong>Tipo de Datos:</strong>  <br />{tipoDatos || "Not found"} </p>
+        <p className='message-container'><strong>Número de Dimensiones:</strong>  <br />{nDimensiones || "Not found"}</p>
       </div>
     );
   }

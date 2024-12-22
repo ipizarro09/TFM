@@ -1,0 +1,384 @@
+
+/* Variables Globales */
+:root {
+  --primary-color: #4caf50;
+  --secondary-color: #ff5722;
+  --font-family: 'Roboto', sans-serif;
+}
+
+/* Global Styles */
+html, body {
+  font-family: var(--font-family);
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+body {
+  margin: 0;
+}
+
+/* Encabezado */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  background-image: url('./uoc_logo.png');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  z-index: 1000;
+}
+
+.header-content {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.app-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-align: left;
+  margin-left: 40px;
+}
+
+/* Layout Principal */
+.App {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px;
+  margin-top: 160px;
+  max-width: 100%;
+}
+
+.left-block, .right-block {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 400px;
+}
+
+.left-block {
+  flex: 2;
+}
+
+.right-block {
+  flex: 1;
+}
+
+h1 {
+  margin-bottom: 10px;
+  color: #14af3b;
+}
+h2 {
+  margin-bottom: 10px;
+  color: #c0ee54;
+}
+h3{
+  margin-bottom: 10px;
+  color: #af1414;
+}
+h4 {
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+/* mensaje data loaded y cual otro mensaje del sistema */ 
+.message-container-group {
+  display: flex; /* Usamos flexbox para alinear los elementos horizontalmente */
+  gap: 10px; /* Separación pequeña entre los elementos */
+  flex-wrap: wrap; /* Permite que los elementos se ajusten si no caben */
+}
+
+@media (max-width: 600px) {
+  .message-container-group {
+    flex-direction: column; /* En pantallas pequeñas, los mensajes estarán uno debajo del otro */
+    align-items: center; /* Alineamos los elementos al centro */
+  }
+}
+
+.message-container {
+  font-size: 16px; /* Tamaño de fuente más pequeño */
+  color: #476b6b; /* Color de texto */
+  background-color:  #eff5f5; /* Fondo suave */
+  padding: 8px 16px; /* Espaciado alrededor del texto */
+  border-radius: 5px; /* Bordes redondeados */
+  text-align: center; /* Centra el texto */
+  margin-top: 10px; /* Espacio superior para separarlo del botón */
+  width: auto; /* El ancho solo se ajustará al contenido */
+  max-width: 200px; /* Limita el ancho máximo */
+  margin-left: left; /* Centrado horizontal */
+  margin-right: left; /* Centrado horizontal */
+}
+
+/* tipos de variables encontradas */
+
+.data-type-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Espacio entre las tarjetas */
+  justify-content: left; /* Centra las tarjetas */
+}
+
+.data-card {
+  background-color: #fff;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 150px; /* Tamaño más pequeño */
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.data-card:hover {
+  transform: scale(1.05); /* Efecto hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+}
+
+.data-card.selected {
+  background-color: #e3f2fd; /* Color de fondo al seleccionar */
+  border-color: #42a5f5; /* Borde azul al seleccionar */
+}
+
+.data-card h5 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.data-card p {
+  margin: 5px 0;
+  font-size: 12px;
+  color: #555;
+}
+
+
+.data-types-list {
+  margin-top: 20px;
+}
+
+.data-item {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.data-column {
+  font-weight: bold;
+}
+
+.data-type {
+  color: #555;
+}
+
+/* cuestionario dinamico de questionnaire.js*/
+
+/*en left block preguntas dinamicas*/
+
+.questionnaire-container {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.select-container {
+  margin-bottom: 20px;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.question-section {
+  margin-bottom: 20px;
+}
+
+/* Resultados */
+
+.results-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #141f1f;
+}
+
+.data-block, .recommendation-block {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.data-block {
+  background-color: #c1d7d7;
+  border-color: #476b6b;
+}
+
+.recommendation-block {
+  background-color: #fffbe6;
+  border-color: #ffe58f;
+}
+
+/* Recomendaciones */
+.recommendation-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.recommendation-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.recommendation-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.recommendation-table th, .recommendation-table td {
+  border: 1px solid #ccc;
+  border-color: #141f1f;
+  padding: 10px;
+  text-align: center;
+}
+
+.recommendation-table th {
+  background-color: #c1d7d7;
+  font-weight: bold;
+}
+
+.chart-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.chart-image {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Botones */
+button, .file-upload-btn, .recommend_btn, .btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: var(--font-family);
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.file-upload-btn {
+  background: #34495e;
+  color: white;
+}
+
+.file-upload-btn:hover, .btn-4:hover {
+  background: #2c3e50;
+}
+
+.recommend_btn {
+  background: #af1414;
+  color: #fff;
+}
+
+.recommend_btn:hover, .btn-3:hover {
+  background: #c0392b;
+}
+
+.btn {
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  padding: 25px 80px;
+  display: inline-block;
+  margin: 15px 30px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  outline: none;
+}
+
+.btn-1 {
+  background: #3498db;
+  color: #fff;
+}
+
+.btn-1:hover {
+  background: #2980b9;
+}
+
+.btn-2 {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.btn-2:hover {
+  background: #27ae60;
+}
+
+/* Iconos en Botones */
+.btn:before {
+  font-family: 'FontAwesome';
+  line-height: 1;
+  position: relative;
+}
+
+.btn-sep {
+  padding: 25px 60px 25px 120px;
+}
+
+.btn-sep:before {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.icon-cart:before { content: "\f07a"; }
+.icon-heart:before { content: "\f55a"; }
+.icon-info:before { content: "\f05a"; }
+.icon-send:before { content: "\f1d8"; }
+
+/* Uploader */
+.file-uploader-container {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin: 20px 0;
+}

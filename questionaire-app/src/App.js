@@ -8,7 +8,6 @@ import Questionnaire from './components/Questionnaire';
 import * as d3 from 'd3';
 import './App.css';
 
-
 function App() {
   const [dataset, setDataset] = useState(null);
   const [columnTypes, setColumnTypes] = useState({});
@@ -25,6 +24,7 @@ function App() {
   const [obsGrupo, setObsGrupo] = useState('Not aplicable');
   const [recommendation, setRecommendation] = useState(''); // Nuevo estado para la recomendación
   const [isLoading, setIsLoading] = useState(false); // Nuevo estado para el indicador de carga
+  const parsedRecommendation = recommendation ? JSON.parse(recommendation) : null;
 
    // Estado para controlar si el botón debe estar habilitado
    const isButtonDisabled = !proposito || !contexto;
@@ -146,23 +146,35 @@ function App() {
 
   return (
     <div className="App">
+      <header className="app-header">
+      <div className="header-content">
+        <h1 className="app-title">Automatización de la Selección de Visualizaciones de Datos Mediante IA para la Alfabetización de Datos</h1>
+        </div>
+      </header>
+      <div className="left-block">
       <FileUploader onUpload={handleFileUpload} />
       {dataset && (
         <div>
-          <h3>Dataset Loaded</h3>
-          <p><strong>Number of records:</strong> {numRecords}</p>
+          <div className="message-container-group">
+          <div className="message-container">Dataset Loaded</div>
+          <p className='message-container'><strong>Number of records:</strong> {numRecords}</p>
+          </div>
           <h4>Detected Data types:</h4>
-          <ul>
-            {Object.entries(columnTypes).map(([column, type]) => (
-              <li key={column}>{column}: {type}</li>
-            ))}
-          </ul>
+          <div className="data-type-cards">
+  {Object.entries(columnTypes).map(([column, type]) => (
+    <div key={column} className="data-card">
+      <h5>{column}</h5>
+      <p>{type}</p>
+    </div>
+  ))}
+</div>
         </div>
       )}
       {dataset && (
         <>
-          <DataTypeSelector tipoDatos={tipoDatos} nDimensiones={nDimensiones} />
+          
           <VariableSelector dataset={dataset} selectedVars={selectedVars} setSelectedVars={setSelectedVars} />
+          <DataTypeSelector tipoDatos={tipoDatos} nDimensiones={nDimensiones} />
           <VisualizationPurposeSelector onSelectPurpose={handlePurposeChange} />
           <VisualizationContextSelector onSelectContext={handleContextChange} />
           <Questionnaire
@@ -182,8 +194,12 @@ function App() {
           />
         </>
       )}
-      <div>
-      <h4>Data collected for recommendation</h4>
+      </div>
+
+      <div className="right-block">
+      <div className="results-container">
+      <div className="data-block">
+      <h3>Data collected for recommendation</h3>
         <p><strong>Purpose of Visualization:</strong> {proposito || "Not applicable"}</p>
         <p><strong>Context of Visualization:</strong> {contexto || "Not applicable"}</p>
         <p><strong>Data type:</strong> {tipoDatos || "Not found"}</p>
@@ -195,8 +211,8 @@ function App() {
         <p><strong>Observations per group:</strong> {obsGrupo || "Not applicable"}</p>
       </div>
        {/* Botón y mensaje condicional */}
-       {isButtonDisabled && <p style={{ color: 'red' }}>Seleccione el propósito y contexto</p>}
-      <button
+       {isButtonDisabled && <p style={{ color: '#ff9900' }}>Seleccione el propósito y contexto</p>}
+      <button className="recommend_btn"
         onClick={() =>
           sendData({
             tipo_datos: tipoDatos,
@@ -215,15 +231,60 @@ function App() {
         Recommend graph
       </button>
       
-      
-      {isLoading && <p>Cargando...</p>} {/* Mostrar mientras se espera respuesta */}
-      {recommendation && <p>Recomendación: {recommendation}</p>} {/* Mostrar recomendación */}
-      {/* Contenedor para el gráfico */}
-      <div id="chart"></div>
+      {parsedRecommendation && (
+            <div className="recommendation-section">
+              <h3 className="recommendation-title">Recommendations</h3>
+              <table className="recommendation-table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Recommendation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Rule-Based</td>
+                    <td>{parsedRecommendation.rule_based}</td>
+                  </tr>
+                  <tr>
+                    <td>AI-Based</td>
+                    <td>{parsedRecommendation.ai_based}</td>
+                  </tr>
+                </tbody>
+              </table>
 
+              <div className="chart-preview">
+                <h4 className="chart-title">Recommended Chart</h4>
+                {parsedRecommendation.ai_based && (
+                  <img
+                    src={`/charts/${parsedRecommendation.ai_based}.png`}
+                    alt={`Recommended chart: ${parsedRecommendation.ai_based}`}
+                    className="chart-image"
+                  />
+                )}
+
+                {/* 
+  <div className="recommendation-block"></div>
+  {isLoading && <p>Cargando...</p>} 
+  {recommendation && <p>Recomendación: {recommendation}</p>} 
+  </div>
+  </div>
+  <div id="chart"></div>
+*/}
+
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
+
+
+
 export default App;
+
+
 

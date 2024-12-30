@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flujos migratorios en Europa de 2015 a 2022</title>
+    <link rel="stylesheet" type="text/css" href="d3.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+    <script src="d3-sankey.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.4/build/d3.layout.cloud.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-left">Flujos migratorios reportados en Europa entre 2015 y 2022</div>
+            <div class="header-right">
+                <div class="selector">
+                    <label for="view-type">View: </label>
+                    <select id="view-type" class="view-selector">
+                        <option value="technical" selected>Technical</option>
+                        <option value="non-technical">Non Technical</option>
+                    </select>
+                </div>
+                <div class="checkbox">
+                    <label for="colorblind-checkbox">Colorblind Safe:</label>
+                    <input type="checkbox" id="colorblind-checkbox">
+                </div>
+                <div class="navigation">
+                    <button class="nav-button" id="prev-button">⬅ Previous</button>
+                    <button class="nav-button" id="next-button">Next ➡</button>
+                </div>
+                <div>
+                    <p id="page-indicator">Page 1</p> <!-- Indicador de página -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Pages -->
+        <div id="page-1" class="content" style="display: flex; background-image: url('background1.jpg');">
+            <div class="grid-container">
+                <div id="zone-11" class="grid-item"></div>
+                <div id="zone-12" class="grid-item"></div>
+                <div id="zone-13" class="grid-item"></div>
+                <div id="zone-14" class="grid-item"></div>
+            </div>
+        </div>        
+        
+        <div id="page-2" class="content" style="display: none; background-image: url('background2.jpg');">
+            <div class="grid-container">
+                <div id="zone-21" class="grid-item"></div>
+                <div id="zone-22" class="grid-item"></div>
+                <div id="zone-23" class="grid-item"></div>
+                <div id="zone-24" class="grid-item"></div>
+            </div>
+        </div>   
+
+        <div id="page-3" class="content" style="display: none; background-image: url('background3.jpg');">
+            <div class="grid-container">
+                <div id="zone-31" class="grid-item"></div>
+                <div id="zone-32" class="grid-item"></div>
+                <div id="zone-33" class="grid-item"></div>
+                <div id="zone-34" class="grid-item"></div>
+            </div>
+        </div>
+
+        <div id="page-4" class="content" style="display: none; background-image: url('background4.jpg');">
+            <div class="grid-container">
+                <div id="zone-41" class="grid-item"></div>
+                <div id="zone-42" class="grid-item"></div>
+                <div id="zone-43" class="grid-item"></div>
+                <div id="zone-44" class="grid-item"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { renderHistogram, renderHistogramDinamico,renderDensityPlotDinamico,
+                renderDensityPlotUni, renderDensityPlotMulti,renderRidgeLine,renderRidgeLineImproved, renderBarPlot,
+                kernelEpanechnikov, kernelDensityEstimator, renderRidgeLine_example,renderBoxplotMultiDinamico,
+                renderViolinPlotMultiDinamico,renderViolinPlotEjemplo,renderBarplotDinamicoHorizontal,
+                renderWordCloudDinamica,renderLollipopPlotDinamico, renderLollipopPlotDinamicoDrill,
+                render2dDensityPlotDinamico,renderBubblePlot, renderHeatmap, renderConnectedScatterPlot,
+                renderConnectedScatterplotExample, renderSmallMultipleLineplot, renderLinePlot,renderLinePlot2,
+                renderSankey,renderChord_example,renderChord,renderTreemap,renderDonought,renderDonoughtDrill,
+                renderGroupedBarplot,renderGroupedBarplotEjemplo,renderBarplotDinamicoVertical,renderBarplotDinamicoVerticalStacked,
+                renderBarplotDinamicoVerticalStacked2 } from './miscomponentesd3.js';
+       
+        let currentPage = 1;
+        const totalPages = 4;
+
+        function showPage(page) {
+            // Actualizar la visualización de las páginas
+            for (let i = 1; i <= totalPages; i++) {
+                document.getElementById(`page-${i}`).style.display = i === page ? 'flex' : 'none';
+            }
+
+            // Actualizar el indicador de página
+            document.getElementById('page-indicator').textContent = `Page ${page}`;
+        }
+
+        // Agregar eventos para los botones de navegación
+        document.getElementById('prev-button').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+
+        document.getElementById('next-button').addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        });
+
+        // Función para actualizar los componentes basados en el tipo de vista y el esquema de colores
+        function updatePageComponents(view, colorScheme = "schemeCategory10") {
+            const zone11 = `#zone-11`;
+            const zone12 = `#zone-12`;
+            const zone13 = `#zone-13`;
+            const zone14 = `#zone-14`;
+            const zone21 = `#zone-21`;
+            const zone22 = `#zone-22`;
+            const zone23 = `#zone-23`;
+            const zone24 = `#zone-24`;
+            const zone31 = `#zone-31`;
+            const zone32 = `#zone-32`;
+            const zone33 = `#zone-33`;
+            const zone34 = `#zone-34`;
+            const zone41 = `#zone-41`;
+            const zone42 = `#zone-42`;
+            const zone43 = `#zone-43`;
+            const zone44 = `#zone-44`;
+            
+            // Limpiar todas las zonas
+            const zones = [zone11, zone12, zone13, zone14, zone21, zone22, zone23, zone24, zone31, zone32, zone33, zone34, zone41, zone42, zone43, zone44];
+            zones.forEach(zone => d3.select(zone).html(''));
+
+            // histogramas y boxplot
+            if (view === 'technical') {
+                renderHistogramDinamico(zone11, 'inmigracion', colorScheme);
+                renderHistogramDinamico(zone11, 'emigracion', colorScheme);
+                renderHistogramDinamico(zone13, 'poblacion', colorScheme);
+                renderHistogramDinamico(zone13, 'muertes', colorScheme);
+                renderBoxplotMultiDinamico(zone12, 'inmigracion', colorScheme);
+                renderViolinPlotMultiDinamico(zone14, 'inmigracion', colorScheme);
+                renderBarplotDinamicoHorizontal(zone21,'inmigracion', 'inmigrations', 'reporting_country_name',colorScheme);                
+                renderBarplotDinamicoHorizontal(zone22,'inmigracion', 'inmigrations', 'country_birth_sub-region',colorScheme); 
+                renderBubblePlot(zone23, 'jan', 'death', 'inmigrations', "reporting_country_sub-region", colorScheme);
+                renderLinePlot2(zone31, "year", "inmigrations","reporting_country_name",  colorScheme); 
+                renderSmallMultipleLineplot(zone32,'inmigracion','inmigrations_log',"country_birth_name", colorScheme);             
+                renderBarplotDinamicoVerticalStacked2(zone33,'inmigracion', 'inmigrations', 'year',"sex",colorScheme);
+                renderHeatmap(zone34, 'year', 'age', 'inmigracion',  colorScheme); 
+                //renderTreemap(zone31,"inmigracion", 200, colorScheme);                
+                renderChord(zone41,"inmigracion", "country_birth_sub-region", "reporting_country_name",'Africa', colorScheme,60000);
+                renderChord(zone42,"inmigracion", "country_birth_sub-region", "reporting_country_name",'America', colorScheme,60000);
+                renderChord(zone43,"inmigracion", "country_birth_sub-region", "reporting_country_name",'Europe', colorScheme,60000);
+                renderChord(zone44,"inmigracion", "country_birth_sub-region", "reporting_country_name",'Asia', colorScheme,60000);
+
+            } else {
+                // density para distribucion , ridgeline y violin
+                renderDensityPlotDinamico(zone11, 'inmigracion', colorScheme);
+                renderDensityPlotDinamico(zone11, 'emigracion',colorScheme);
+                renderDensityPlotDinamico(zone13, 'poblacion', colorScheme);
+                renderDensityPlotDinamico(zone13, 'muertes', colorScheme);
+                renderRidgeLine(zone12, 'inmigracion', colorScheme);
+                renderRidgeLineImproved(zone14, 'inmigracion', colorScheme,'reporting_country_sub-region');
+                //renderWordCloudDinamica(zone21,'inmigracion', 'inmigrations', 'country_birth_sub-region',colorScheme); // lo quito por problemas de rendimiento
+                renderLollipopPlotDinamico(zone21,'inmigracion', 'inmigrations', 'reporting_country_name',colorScheme);
+                renderLollipopPlotDinamico(zone22,'inmigracion', 'inmigrations', 'country_birth_sub-region',colorScheme);
+                //renderDonought(zone22, "inmigrations",  "country_birth_sub-region", colorScheme ) 
+                renderLollipopPlotDinamicoDrill(zone23,'inmigracion', 'inmigrations', 'country_birth_name',colorScheme);
+                renderDonoughtDrill(zone24, "inmigrations",  "country_birth_name", colorScheme ) ;
+                //render2dDensityPlotDinamico(zone23, 'inmigrations', 'death',colorScheme);
+                renderLinePlot(zone31, "year", "inmigrations","reporting_country_name",  colorScheme);
+                renderLinePlot(zone32, "year", "inmigrations","country_birth_name",  colorScheme);
+                renderBarplotDinamicoVertical(zone33,'inmigracion', 'inmigrations', 'year',colorScheme);
+                //, "inmigracion", "year", "inmigrations", "sex", "schemeCategory10")                
+                renderConnectedScatterPlot(zone34, 'year', 'inmigrations_log', 'age',  colorScheme);
+                renderSankey(zone41,"inmigracion", "country_birth_sub-region", "reporting_country_name",'Africa', colorScheme,60000);
+                renderSankey(zone42,"inmigracion", "country_birth_sub-region", "reporting_country_name",'America', colorScheme,60000);
+                renderSankey(zone43,"inmigracion", "country_birth_sub-region", "reporting_country_name", 'Europe', colorScheme,60000);
+                renderSankey(zone44,"inmigracion", "country_birth_sub-region", "reporting_country_name", 'Asia', colorScheme,60000);
+                
+            }
+        }
+
+        // Cambiar la vista (Technical o Non-Technical)
+        document.getElementById('view-type').addEventListener('change', event => {
+            const view = event.target.value;
+            const colorScheme = document.getElementById('colorblind-checkbox').checked ? "schemeDark2" : "schemeCategory10";
+            updatePageComponents(view, colorScheme);
+        });
+
+        // Colorblind Safe Mode Toggle
+        document.getElementById('colorblind-checkbox').addEventListener('change', event => {
+            const isChecked = event.target.checked;
+            const colorScheme = isChecked ? "schemeDark2" : "schemeCategory10";
+            // Actualizar los componentes con el esquema de colores correspondiente
+            const currentView = document.getElementById('view-type').value; // Obtener el valor actual de la vista seleccionada
+            updatePageComponents(currentView, colorScheme);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+        // Establecer el valor inicial del selector en "technical"
+        const viewSelector = document.getElementById('view-type');
+        viewSelector.value = 'technical'; // Asegura que el selector inicie en "technical"
+
+        // Inicializar la primera página y los componentes con vista técnica
+        showPage(currentPage);
+        const colorScheme = "schemeCategory10"; // Esquema de colores por defecto
+        updatePageComponents('technical', colorScheme);
+    });
+    </script>
+</body>
+</html>

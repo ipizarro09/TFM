@@ -1,0 +1,159 @@
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px; /* Aumentamos el padding para más espacio interior */
+    background-color: #b8abab;
+    border-bottom: 1px solid #ccc;
+    background-image: url('fondoMigracion_s.jpg'); /* Replace with actual header image */
+    background-size: cover;
+    background-position: center;
+    color: white;
+    position: relative;
+    height: 150px; /* Establece una altura fija para hacer el header más grande */
+}
+
+.header-left {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.header-right label {
+    margin-right: 5px;
+}
+
+.header-right select,
+.header-right input[type="checkbox"] {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Nueva clase para centrar los botones de navegación en la parte inferior del header */
+.navigation {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%); /* Esto centra los botones horizontalmente */
+    display: flex;
+    gap: 20px;
+}
+
+#page-indicator {
+    font-size: 14px;
+    color: rgb(71, 70, 70);
+    margin-bottom: 5px; /* Espacio entre el indicador y los botones */
+    font-weight: bold; /* Pone el texto en negrita */
+    text-align: left;  /* Alinea el texto a la izquierda */
+    width: 100%; /* Asegura que ocupe todo el espacio disponible */
+}
+
+.nav-button {
+    cursor: pointer;
+    padding: 10px 20px;
+    background-color: #756c5d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.nav-button:hover {
+    background-color: #383a3b;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
+
+.colorblind-safe {
+    position: absolute;
+    bottom: 60px;
+    right: 20px;
+}
+
+/* Grid layout for content */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.grid-item {
+    background-color: #f9f9f9;  /* Fondo gris claro para las zonas */
+    border: 1px solid #ccc;
+    position: relative;
+}
+
+#zone-11 {
+    width: 100%;           /* Ajusta el tamaño según sea necesario */
+    display: flex;         /* Usa flexbox para centrar el contenido */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;   /* Centra verticalmente */
+    height: 500px;         /* Ajusta la altura del contenedor */
+    position: relative;    /* Esto es importante para posicionar el gráfico correctamente */
+  }
+
+#zone-12 {
+    width: 100%;           /* Ajusta el tamaño según sea necesario */
+    display: flex;         /* Usa flexbox para centrar el contenido */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;   /* Centra verticalmente */
+    height: 500px;         /* Ajusta la altura del contenedor */
+    position: relative;    /* Esto es importante para posicionar el gráfico correctamente */
+  }
+
+  #zone-13 {
+    width: 100%;           /* Ajusta el tamaño según sea necesario */
+    display: flex;         /* Usa flexbox para centrar el contenido */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;   /* Centra verticalmente */
+    height: 500px;         /* Ajusta la altura del contenedor */
+    position: relative;    /* Esto es importante para posicionar el gráfico correctamente */
+  }
+
+#zone-14 {
+    width: 100%;           /* Ajusta el tamaño según sea necesario */
+    display: flex;         /* Usa flexbox para centrar el contenido */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;   /* Centra verticalmente */
+    height: 500px;         /* Ajusta la altura del contenedor */
+    position: relative;    /* Esto es importante para posicionar el gráfico correctamente */
+  }

@@ -134,6 +134,7 @@ h4 {
 
 .data-card {
   background-color: #fff;
+  color: #476b6b; /* Color de texto */
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -141,7 +142,8 @@ h4 {
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(151, 151, 151, 0.1);
+  overflow: hidden; /* Evita que el texto se salga */
 }
 
 .data-card:hover {
@@ -151,8 +153,9 @@ h4 {
 
 .data-card.selected {
   background-color: #e3f2fd; /* Color de fondo al seleccionar */
-  border-color: #42a5f5; /* Borde azul al seleccionar */
+  border-color: #527a7a; /* Borde azul al seleccionar */
 }
+
 
 .data-card h5 {
   margin: 0;
@@ -190,26 +193,40 @@ h4 {
 
 .questionnaire-container {
   margin-top: 20px;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.select-container {
-  margin-bottom: 20px;
-}
-
-select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-  margin-top: 5px;
-}
 
 .question-section {
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espaciado entre los elementos */
+}
+
+.question-section h4 {
+  margin: 0;
+  font-size: 16px; /* Tamaño más compacto para el título */
+  color: #34495e; /* Color del título */
+}
+
+.question-section select {
+  width: 100%; /* Se adapta al contenedor */
+  max-width: 300px; /* Limita el ancho máximo */
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #f9f9f9; /* Fondo más claro */
+  transition: box-shadow 0.3s ease;
+}
+
+.question-section select:hover, 
+.question-section select:focus {
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3); /* Efecto visual al pasar o enfocar */
+  border-color: #527a7a; /* Borde azul al enfocarse */
 }
 
 /* Resultados */
@@ -272,24 +289,42 @@ select {
 }
 
 .chart-preview {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 50%;
+  padding: 10px;
+  border: 1px solid #ccc; /* Opcional: para ver los límites */
+  border-radius: 8px; /* Opcional: bordes redondeados */
+}
+
+.chart-content {
+  display: flex; /* Flexbox para alinear la imagen y el enlace horizontalmente */
+  align-items: center; /* Alineación vertical central */
+  gap: 20px; /* Espacio entre la imagen y el enlace */
+}
+
+
+.chart-image {
+  max-width: 150px; /* Ajusta el tamaño de la imagen */
+  height: auto;
+}
+
+.visualization-link a {
+  font-size: 16px;
+  color: #af1414; /* Azul estándar para enlaces */
+  text-decoration: none;
+  padding: 8px 12px;
+  border: 1px solid #af1414; /* Bordes opcionales */
+  border-radius: 5px; /* Bordes redondeados */
+  transition: all 0.3s ease; /* Transición suave */
+}
+
+.visualization-link a:hover {
+  background-color: #2c3e50;
+  color: white;
 }
 
 .chart-title {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
-}
-
-.chart-image {
-  max-width: 100%;
-  height: auto;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 /* Botones */

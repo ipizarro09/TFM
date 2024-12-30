@@ -5,6 +5,7 @@ import DataTypeSelector from './components/DataTypeSelector';
 import VisualizationPurposeSelector from './components/VisualizationPurposeSelector';
 import VisualizationContextSelector from './components/VisualizationContextSelector';
 import Questionnaire from './components/Questionnaire';
+import DataTypeCard from './components/DataTypeCard';
 import * as d3 from 'd3';
 import './App.css';
 
@@ -156,25 +157,43 @@ function App() {
       {dataset && (
         <div>
           <div className="message-container-group">
-          <div className="message-container">Dataset Loaded</div>
+          <p className="message-container"><strong>Dataset Loaded</strong></p>
           <p className='message-container'><strong>Number of records:</strong> {numRecords}</p>
+          {/* Agregar el DataTypeSelector justo después */}
+          {tipoDatos && nDimensiones && (
+            <div className="data-type-selector">
+              <DataTypeSelector tipoDatos={tipoDatos} nDimensiones={nDimensiones} />
+            </div>
+          )}
           </div>
           <h4>Detected Data types:</h4>
+
           <div className="data-type-cards">
   {Object.entries(columnTypes).map(([column, type]) => (
-    <div key={column} className="data-card">
-      <h5>{column}</h5>
-      <p>{type}</p>
-    </div>
+    <DataTypeCard
+      key={column}
+      column={column}
+      type={type}
+      isSelected={selectedVars.includes(column)}
+      onToggle={() => {
+        const newSelection = selectedVars.includes(column)
+          ? selectedVars.filter((v) => v !== column)
+          : [...selectedVars, column];
+        setSelectedVars(newSelection);
+      }}
+    />
   ))}
 </div>
+
+
+ 
         </div>
       )}
       {dataset && (
         <>
           
-          <VariableSelector dataset={dataset} selectedVars={selectedVars} setSelectedVars={setSelectedVars} />
-          <DataTypeSelector tipoDatos={tipoDatos} nDimensiones={nDimensiones} />
+        {/* <VariableSelector dataset={dataset} selectedVars={selectedVars} setSelectedVars={setSelectedVars} /> */}
+
           <VisualizationPurposeSelector onSelectPurpose={handlePurposeChange} />
           <VisualizationContextSelector onSelectContext={handleContextChange} />
           <Questionnaire
@@ -210,6 +229,7 @@ function App() {
         <p><strong>High number of groups in data:</strong> {nGruposAlto || "Not applicable"}</p>
         <p><strong>Observations per group:</strong> {obsGrupo || "Not applicable"}</p>
       </div>
+            
        {/* Botón y mensaje condicional */}
        {isButtonDisabled && <p style={{ color: '#ff9900' }}>Seleccione el propósito y contexto</p>}
       <button className="recommend_btn"
@@ -255,6 +275,7 @@ function App() {
 
               <div className="chart-preview">
                 <h4 className="chart-title">Recommended Chart</h4>
+                <div className="chart-content">
                 {parsedRecommendation.ai_based && (
                   <img
                     src={`/charts/${parsedRecommendation.ai_based}.png`}
@@ -263,14 +284,19 @@ function App() {
                   />
                 )}
 
-                {/* 
-  <div className="recommendation-block"></div>
-  {isLoading && <p>Cargando...</p>} 
-  {recommendation && <p>Recomendación: {recommendation}</p>} 
-  </div>
-  </div>
-  <div id="chart"></div>
-*/}
+        {/* Agregar el enlace aquí */}
+        <div className="visualization-link">
+            <a 
+              href="/visualization/index.html" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{ textDecoration: 'none', fontSize: '20px' }}
+            >
+              Ir a la visualización
+            </a>
+          </div> </div>
+          
+              
 
               </div>
             </div>

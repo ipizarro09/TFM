@@ -3831,7 +3831,7 @@ export function renderGroupedBarplotEjemplo(containerId) {
             }
             
             // Filtramos UNKNOWN y Other
-            const filteredData = chartData.filter(d => d[yColumn] !== "UNKNOWN" && d[yColumn] !== "Other");
+            const filteredData = chartData.filter(d => d["country_birth_region"] !== "UNKNOWN" && d["country_birth_region"] !== "Other");
     
             // Encontrar el año con el valor máximo de inmigración
             const maxInmigrations = d3.max(filteredData, d => +d[xColumn]);
@@ -3896,138 +3896,189 @@ export function renderGroupedBarplotEjemplo(containerId) {
         }).catch(error => console.error('Error al cargar los datos:', error));
     }
     
-    
-    export function renderBarplotDinamicoVerticalStacked(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "year", groupedColumn = "sex", colorScheme = "schemeCategory10") {
+    export function renderBarplotDinamicoVerticalStacked(
+    containerId, 
+    dataSource = "inmigracion", 
+    xColumn = "year", 
+    yColumn = "inmigrations", 
+    groupedColumn = "sex", 
+    colorScheme = "schemeCategory10"
+) {
+    const container = d3.select(containerId);
+    container.html(''); // Limpiar contenedor antes de agregar el gráfico
+
+    getCachedData().then(data => {
+        let chartData;
+        switch (dataSource) {
+            case 'emigracion':
+                chartData = data.emigration.withoutTotal;
+                break;
+            case 'inmigracion':
+                chartData = data.inmigration.withoutTotal;
+                break;
+            default:
+                console.error('Tipo de datos desconocido:', dataSource);
+                return;
+        }
+
+        // Filtrar valores inválidos
+        const filteredData = chartData.filter(d => d[xColumn] !== "UNKNOWN" && d[xColumn] !== "Other");
+        if (!filteredData.length) {
+            console.error('No se encontraron datos válidos después del filtrado.');
+            return;
+        }
+
+        // Obtener las claves para stackedData
+        const keys = [...new Set(filteredData.map(d => d[groupedColumn]))];
+
+        // Reestructurar datos para apilado
+        const preparedData = d3.groups(filteredData, d => d[xColumn])
+            .map(([key, values]) => {
+                const aggregated = { [xColumn]: key };
+                keys.forEach(k => {
+                    const item = values.find(v => v[groupedColumn] === k);
+                    aggregated[k] = item ? +item[yColumn] : 0;
+                });
+                return aggregated;
+            });
+
+        // Generar datos apilados
+        const stackedData = d3.stack()
+            .keys(keys)(preparedData);
+
+        // Dimensiones del gráfico
+        const svgWidth = 600, svgHeight = 400;
+        const margin = { top: 20, right: 20, bottom: 50, left: 50 };
+        const width = svgWidth - margin.left - margin.right;
+        const height = svgHeight - margin.top - margin.bottom;
+
+        const svg = container.append("svg")
+            .attr("width", svgWidth)
+            .attr("height", svgHeight);
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Escalas
+        const x = d3.scaleBand()
+            .domain(preparedData.map(d => d[xColumn]))
+            .range([0, width])
+            .padding(0.2);
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(stackedData[stackedData.length - 1], d => d[1])])
+            .nice()
+            .range([height, 0]);
+
+        const color = d3.scaleOrdinal(d3[colorScheme]);
+
+        // Dibujar barras apiladas
+        g.selectAll("g")
+            .data(stackedData)
+            .join("g")
+            .attr("fill", d => color(d.key))
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr("x", d => x(d.data[xColumn]))
+            .attr("y", d => y(d[1]))
+            .attr("height", d => y(d[0]) - y(d[1]))
+            .attr("width", x.bandwidth());
+
+        // Ejes
+        g.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x));
+
+        g.append("g")
+            .call(d3.axisLeft(y));
+    });
+}
+
+        
+    export function renderBarplotDinamicoVerticalGrouped(
+        containerId, 
+        dataSource = "inmigracion", 
+        xColumn = "year", 
+        yColumn = "inmigrations", 
+        groupedColumn = "sex", 
+        colorScheme = "schemeCategory10"
+    ) {
         const container = d3.select(containerId);
         container.html(''); // Limpiar contenedor antes de agregar el gráfico
     
         getCachedData().then(data => {
-            // Seleccionar el conjunto de datos según el parámetro dataSource
             let chartData;
             switch (dataSource) {
                 case 'emigracion':
-                    chartData = data.emigration.withoutTotal; // Usar los datos de emigración
+                    chartData = data.emigration.withoutTotal;
                     break;
                 case 'inmigracion':
-                    chartData = data.inmigration.withoutTotal; // Usar los datos de inmigración
+                    chartData = data.inmigration.withoutTotal;
                     break;
                 default:
                     console.error('Tipo de datos desconocido:', dataSource);
                     return;
             }
     
-            if (!Array.isArray(chartData)) {
-                console.error('chartData no es un array:', chartData);
-                return;
-            }
-            
-            // Filtramos UNKNOWN y Other
-            const filteredData = chartData.filter(d => d[yColumn] !== "UNKNOWN" && d[yColumn] !== "Other");
-    
-            // Verificar si hay datos después del filtrado
-            if (filteredData.length === 0) {
+            const filteredData = chartData.filter(d => d["country_birth_region"] !== "UNKNOWN" && d["country_birth_region"] !== "Other");
+            if (!filteredData.length) {
                 console.error('No se encontraron datos válidos después del filtrado.');
                 return;
             }
     
-            console.log("Datos filtrados:", filteredData);
+            const groupedData = d3.group(filteredData, d => d[xColumn]);
+            console.log("datos agrupados:", groupedData)
+            const svgWidth = 600, svgHeight = 400;
+            const margin = { top: 20, right: 20, bottom: 50, left: 50 };
+            const width = svgWidth - margin.left - margin.right;
+            const height = svgHeight - margin.top - margin.bottom;
     
-            // Verificar si la columna `sex` existe en los datos
-            const sexes = [...new Set(filteredData.map(d => d[groupedColumn]))];
-            if (sexes.length === 0) {
-                console.error(`No se encontraron valores válidos en la columna ${groupedColumn}.`);
-                return;
-            }
+            const svg = container.append("svg")
+                .attr("width", svgWidth)
+                .attr("height", svgHeight);
     
-            console.log("sexes:", sexes);
-    
-            // Configuración del gráfico con dimensiones más grandes
-            const margin = { top: 50, right: 50, bottom: 150, left: 80 },
-                  width = 800 - margin.left - margin.right,
-                  height = 600 - margin.top - margin.bottom;
-    
-            // Crear SVG
-            const svg = container
-                .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
+            const g = svg.append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
     
-            // Escala X (ahora para las categorías)
-            const x = d3.scaleBand()
-                .domain(filteredData.map(d => d[yColumn])) // Nombres dinámicos en base a la columna yColumn
+            const x0 = d3.scaleBand()
+                .domain([...groupedData.keys()])
                 .range([0, width])
+                .padding(0.2);
+    
+            const x1 = d3.scaleBand()
+                .domain([...new Set(filteredData.map(d => d[groupedColumn]))])
+                .range([0, x0.bandwidth()])
                 .padding(0.1);
     
-            svg.append("g")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x).tickSize(0))
-                .selectAll("text")
-                .style("font-size", "12px")
-                .style("text-anchor", "middle")
-                .style("angle", "-90px");
-    
-            // Escala Y (ahora para los valores)
             const y = d3.scaleLinear()
-                .domain([0, d3.max(filteredData, d => +d[xColumn]) || 1]) // Máximo dinámico en base a los datos
+                .domain([0, d3.max(filteredData, d => +d[yColumn])])
+                .nice()
                 .range([height, 0]);
     
-            svg.append("g")
-                .call(d3.axisLeft(y).ticks(5))
-                .selectAll("text")
-                .style("font-size", "12px");
+            const color = d3.scaleOrdinal(d3[colorScheme]);
     
-            // Agrupar los datos por año
-            const groupedData = d3.group(filteredData, d => d[yColumn]);
-    
-            // Preparar los datos para el apilamiento
-            const stackedData = Array.from(groupedData, ([year, records]) => {
-                const recordBySex = sexes.reduce((acc, sex) => {
-                    // Sumamos los valores de inmigración por sexo para cada año
-                    acc[sex] = d3.sum(records.filter(r => r[groupedColumn] === sex), d => +d[xColumn]);
-                    return acc;
-                }, { year });
-                return recordBySex;
-            });
-    
-            // Usar d3.stack() para apilar los datos por sexo
-            const stack = d3.stack()
-                .keys(sexes) // Usar las claves del sexo
-                .value((d, key) => d[key] || 0); // Si no hay valor, establecerlo a 0
-    
-            // Apilar los datos
-            const stacked = stack(stackedData);
-    
-            // Crear una escala de colores para los sexos
-            const colorScale = d3.scaleOrdinal(d3[colorScheme]).domain(sexes);
-    
-            // Dibujar las barras apiladas
-            svg.selectAll(".bar")
-                .data(stacked)
-                .enter()
-                .append("g")
-                .attr("class", "bar")
-                .attr("fill", (d, i) => colorScale(d.key))
+            g.append("g")
+                .selectAll("g")
+                .data(groupedData)
+                .join("g")
+                .attr("transform", d => `translate(${x0(d[0])},0)`)
                 .selectAll("rect")
-                .data(d => d)
-                .enter()
-                .append("rect")
-                .attr("x", d => x(d.data.year)) // La posición x de la barra
-                .attr("y", d => y(d[1])) // La posición y de la barra
-                .attr("width", x.bandwidth())
-                .attr("height", d => y(d[0]) - y(d[1])) // Altura de la barra apilada
-                .attr("fill", d => colorScale(d.key)); // Colorear las barras por sexo
+                .data(d => d[1])
+                .join("rect")
+                .attr("x", d => x1(d[groupedColumn]))
+                .attr("y", d => y(d[yColumn]))
+                .attr("width", x1.bandwidth())
+                .attr("height", d => height - y(d[yColumn]))
+                .attr("fill", d => color(d[groupedColumn]));
     
-            // Añadir título al gráfico
-            svg.append("text")
-                .attr("x", width / 2)
-                .attr("y", -10)
-                .attr("text-anchor", "middle")
-                .style("font-size", "16px")
-                .style("font-weight", "bold")
-                .text(`Ranking de ${xColumn} en ${dataSource} por ${yColumn} (Apilado por ${groupedColumn})`);
-        }).catch(error => console.error('Error al cargar los datos:', error));
+            g.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x0));
+    
+            g.append("g")
+                .call(d3.axisLeft(y));
+        });
     }
     
     

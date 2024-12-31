@@ -32,7 +32,7 @@
                     <button class="nav-button" id="next-button">Next ➡</button>
                 </div>
                 <div>
-                    <p id="page-indicator">Page 1</p> <!-- Indicador de página -->
+                    <p id="page-indicator">Page 1</p> <!-- ver en qué página estamos -->
                 </div>
             </div>
         </header>
@@ -85,7 +85,7 @@
                 renderConnectedScatterplotExample, renderSmallMultipleLineplot, renderLinePlot,renderLinePlot2,
                 renderSankey,renderChord_example,renderChord,renderTreemap,renderDonought,renderDonoughtDrill,
                 renderGroupedBarplot,renderGroupedBarplotEjemplo,renderBarplotDinamicoVertical,renderBarplotDinamicoVerticalStacked,
-                renderBarplotDinamicoVerticalStacked2 } from './miscomponentesd3.js';
+                renderBarplotDinamicoVerticalStacked2, renderBarplotDinamicoVerticalGrouped } from './miscomponentesd3.js';
        
         let currentPage = 1;
         const totalPages = 4;
@@ -134,11 +134,11 @@
             const zone43 = `#zone-43`;
             const zone44 = `#zone-44`;
             
-            // Limpiar todas las zonas
+            // Limpip todas las zonas
             const zones = [zone11, zone12, zone13, zone14, zone21, zone22, zone23, zone24, zone31, zone32, zone33, zone34, zone41, zone42, zone43, zone44];
             zones.forEach(zone => d3.select(zone).html(''));
 
-            // histogramas y boxplot
+            // aqui lo que considero tecnido
             if (view === 'technical') {
                 renderHistogramDinamico(zone11, 'inmigracion', colorScheme);
                 renderHistogramDinamico(zone11, 'emigracion', colorScheme);
@@ -149,9 +149,11 @@
                 renderBarplotDinamicoHorizontal(zone21,'inmigracion', 'inmigrations', 'reporting_country_name',colorScheme);                
                 renderBarplotDinamicoHorizontal(zone22,'inmigracion', 'inmigrations', 'country_birth_sub-region',colorScheme); 
                 renderBubblePlot(zone23, 'jan', 'death', 'inmigrations', "reporting_country_sub-region", colorScheme);
+                renderBarplotDinamicoVerticalStacked(zone24,'inmigracion', 'inmigrations', 'year',"sex",colorScheme);
                 renderLinePlot2(zone31, "year", "inmigrations","reporting_country_name",  colorScheme); 
                 renderSmallMultipleLineplot(zone32,'inmigracion','inmigrations_log',"country_birth_name", colorScheme);             
-                renderBarplotDinamicoVerticalStacked2(zone33,'inmigracion', 'inmigrations', 'year',"sex",colorScheme);
+                renderBubblePlot(zone33, 'jan', 'death', 'inmigrations', "reporting_country_sub-region", colorScheme);
+                //renderBarplotDinamicoVerticalGrouped(zone33,'inmigracion', 'inmigrations', 'year',"sex",colorScheme);
                 renderHeatmap(zone34, 'year', 'age', 'inmigracion',  colorScheme); 
                 //renderTreemap(zone31,"inmigracion", 200, colorScheme);                
                 renderChord(zone41,"inmigracion", "country_birth_sub-region", "reporting_country_name",'Africa', colorScheme,60000);
@@ -160,7 +162,7 @@
                 renderChord(zone44,"inmigracion", "country_birth_sub-region", "reporting_country_name",'Asia', colorScheme,60000);
 
             } else {
-                // density para distribucion , ridgeline y violin
+                // no tecnico
                 renderDensityPlotDinamico(zone11, 'inmigracion', colorScheme);
                 renderDensityPlotDinamico(zone11, 'emigracion',colorScheme);
                 renderDensityPlotDinamico(zone13, 'poblacion', colorScheme);
@@ -174,7 +176,7 @@
                 renderLollipopPlotDinamicoDrill(zone23,'inmigracion', 'inmigrations', 'country_birth_name',colorScheme);
                 renderDonoughtDrill(zone24, "inmigrations",  "country_birth_name", colorScheme ) ;
                 //render2dDensityPlotDinamico(zone23, 'inmigrations', 'death',colorScheme);
-                renderLinePlot(zone31, "year", "inmigrations","reporting_country_name",  colorScheme);
+                renderLinePlot2(zone31, "year", "inmigrations","reporting_country_name",  colorScheme);
                 renderLinePlot(zone32, "year", "inmigrations","country_birth_name",  colorScheme);
                 renderBarplotDinamicoVertical(zone33,'inmigracion', 'inmigrations', 'year',colorScheme);
                 //, "inmigracion", "year", "inmigrations", "sex", "schemeCategory10")                

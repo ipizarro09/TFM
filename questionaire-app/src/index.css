@@ -1,0 +1,11 @@
+/* index.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif; /* Usa la fuente importada */
+  background-color: #f9f9f9;
+}
+
+* {
+  box-sizing: border-box; /* Manejo consistente de bordes y márgenes */
+}

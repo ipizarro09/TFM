@@ -57,18 +57,18 @@ function App() {
         setDatasetSize('Big');
       }
 
-      // Calcular nDimensiones y tipoDatos si hay variables seleccionadas
+      // Calculamos nDimensiones y tipoDatos si hay variables seleccionadas
       if (selectedVars.length > 0) {
         const numNumericas = selectedVars.filter(v => columnTypes[v] === 'Numeric').length;
         const numCategoricas = selectedVars.filter(v => columnTypes[v] === 'Categorical').length;
 
-        // Determinar dimensiones
+        // Determinamos dimensiones
         if (selectedVars.length === 1) setNDimensiones('1D');
         else if (selectedVars.length === 2) setNDimensiones('2D');
         else if (selectedVars.length === 3) setNDimensiones('3D');
         else if (selectedVars.length > 3) setNDimensiones('3D+');
 
-        // Determinar tipo de datos
+        // Determinamos los tipo de datos
         if (numNumericas === selectedVars.length) setTipoDatos('Numeric');
         else if (numCategoricas === selectedVars.length) setTipoDatos('Categorical');
         else if (numNumericas === 1 && numCategoricas === 1) setTipoDatos('1NUM1CAT');
@@ -84,8 +84,8 @@ function App() {
   // llamada al servidor server.js backend en su endpoint
   const sendData = async (data) => {
     console.log(data);
-    setIsLoading(true); // Mostrar indicador de carga
-    setRecommendation(''); // Limpiar recomendación anterior
+    setIsLoading(true); // Mostramos el indicador de carga
+    setRecommendation(''); // Limpiamos la recomendación anterior
     try {
       const response = await fetch("http://localhost:3001/submit-form", {
         method: "POST",
@@ -102,7 +102,7 @@ function App() {
     } catch (error) {
       console.error("Error en la solicitud:", error);
     } finally {
-      setIsLoading(false); // Ocultar indicador de carga
+      setIsLoading(false); // Ocultamos el indicador de carga
     }
   };
 

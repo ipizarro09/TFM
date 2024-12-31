@@ -10,7 +10,7 @@ const FileUploader = ({ onUpload }) => {
         const data = result.data;
         const numRecords = data.length;
 
-        // Detectar tipo de datos en cada columna
+        // Detectamos el tipo de datos en cada columna
         const columnTypes = {};
         const columns = Object.keys(data[0] || {});
 
@@ -27,7 +27,7 @@ const FileUploader = ({ onUpload }) => {
           columnTypes[column] = isNumeric ? 'Numeric' : 'Categorical';
         });
 
-        // Llamar a la función `onUpload` con el dataset, tipos de columna y número de registros
+        // Llamo a la función `onUpload` con el dataset, tipos de columna y número de registros
         onUpload({ data, columnTypes, numRecords });
       },
       error: (error) => console.error("Error parsing file:", error),

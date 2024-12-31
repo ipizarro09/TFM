@@ -351,11 +351,11 @@ def recommend_AI(features, modelo, label_encoder_y, encoders, required_columns):
         if col in features:
             value = features[col]
 
-            # Verificar si la característica es categórica y usar el codificador adecuado
+            # Verificamos si la característica es categórica y usar el codificador adecuado
             if col in encoders:  # Si existe un encoder para la columna
                 if pd.isna(value) or value not in encoders[col].classes_:
                     raise ValueError(f"Valor inválido o no visto en la columna '{col}': {value}")
-                # Codificar la característica
+                # Codificamos la característica
                 encoded_value = encoders[col].transform([value])[0]
                 input_data.append(encoded_value)
             else:
@@ -375,7 +375,7 @@ if __name__ == "__main__":
     id = sys.argv[1]  # Obtener el ID de las respuestas desde los argumentos de la línea de comandos
     try:
         responses = fetch_responses(id)
-        # Generar ambas recomendaciones
+        # Generamos las dos recomendaciones
         recommendation_rule = recommend_rule(responses)
 
         required_columns = [ 'n_dimensiones' ,

@@ -27,6 +27,23 @@ function App() {
   const [isLoading, setIsLoading] = useState(false); // Nuevo estado para el indicador de carga
   const parsedRecommendation = recommendation ? JSON.parse(recommendation) : null;
 
+  const getEnabledPurposes = () => {
+    if (tipoDatos === 'Numeric' && nDimensiones === '1D') {
+      return ['Distribution']; // Solo habilitar 'Distribution'
+    }
+    // Caso para 2D o 3D Numeric: habilitar 'Distribution', 'Correlation' y 'Evolution'
+    if (tipoDatos === 'Numeric' && (nDimensiones === '2D' || nDimensiones === '3D')) {
+      return ['Distribution', 'Correlation', 'Evolution']; // Solo 'Distribution', 'Correlation' y 'Evolution'
+    }
+    
+    // Caso para 3D+ Numeric: habilitar 'Distribution', 'Correlation' 'Evolution' y 'Parte-todo'
+    if (tipoDatos === 'Numeric' && nDimensiones === '3D+' ) {
+      return ['Distribution', 'Correlation', 'Evolution','Part-to-whole']; // Solo 'Distribution', 'Correlation' y 'Evolution'
+    }
+
+    return ['Distribution', 'Correlation', 'Ranking', 'Part-to-whole', 'Evolution', 'Flow']; // Habilitar todos por defecto
+  };
+
    // Estado para controlar si el botón debe estar habilitado
    const isButtonDisabled = !proposito || !contexto;
 
@@ -77,6 +94,15 @@ function App() {
       }
     }
   }, [selectedVars, dataset, numRecords, columnTypes]);
+
+  // Cambio 05/01 para resetear cuando se deseleccionan variables los valors de preguntas dinamicas que ya no aparecerían
+  useEffect(() => {
+    // Resetear el tipo de datos, dimensiones y demás estado relacionado con las variables seleccionadas
+    setNGruposAlto('Not applicable');
+    setOrdenadas('Not applicable');
+    setRelacion('Not applicable');
+    setObsGrupo('Not applicable');
+  }, [selectedVars]); // Este efecto se activará cada vez que cambie selectedVars
 
   const handlePurposeChange = (value) => setProposito(value);
   const handleContextChange = (value) => setContexto(value);
@@ -169,21 +195,21 @@ function App() {
           <h4>Detected Data types:</h4>
 
           <div className="data-type-cards">
-  {Object.entries(columnTypes).map(([column, type]) => (
-    <DataTypeCard
-      key={column}
-      column={column}
-      type={type}
-      isSelected={selectedVars.includes(column)}
-      onToggle={() => {
-        const newSelection = selectedVars.includes(column)
-          ? selectedVars.filter((v) => v !== column)
-          : [...selectedVars, column];
-        setSelectedVars(newSelection);
-      }}
-    />
-  ))}
-</div>
+            {Object.entries(columnTypes).map(([column, type]) => (
+              <DataTypeCard
+                key={column}
+                column={column}
+                type={type}
+                isSelected={selectedVars.includes(column)}
+                onToggle={() => {
+                  const newSelection = selectedVars.includes(column)
+                    ? selectedVars.filter((v) => v !== column)
+                    : [...selectedVars, column];
+                  setSelectedVars(newSelection);
+                }}
+              />
+            ))}
+          </div>
 
 
  
@@ -194,7 +220,11 @@ function App() {
           
         {/* <VariableSelector dataset={dataset} selectedVars={selectedVars} setSelectedVars={setSelectedVars} /> */}
 
-          <VisualizationPurposeSelector onSelectPurpose={handlePurposeChange} />
+          {/*<VisualizationPurposeSelector onSelectPurpose={handlePurposeChange} />*/}
+          <VisualizationPurposeSelector 
+            onSelectPurpose={handlePurposeChange} 
+            enabledPurposes={getEnabledPurposes()} 
+          />
           <VisualizationContextSelector onSelectContext={handleContextChange} />
           <Questionnaire
             tipoDatos={tipoDatos} 
@@ -284,7 +314,7 @@ function App() {
                   />
                 )}
 
-        {/* Agregar el enlace aquí */}
+        {/* enlace a visualización */}
         <div className="visualization-link">
             <a 
               href="/visualization/index.html" 

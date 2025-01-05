@@ -95,6 +95,37 @@ h4 {
   color: #34495e;
 }
 
+.purpose-selector {
+  display: flex;
+  flex-direction: column; /* Alinea los elementos en columna */
+  align-items: flex-start; /* Alinea los elementos al inicio */
+  margin-top: 10px; /* Espacio en la parte superior */
+}
+
+.purpose-selector-radio {
+  display: flex; /* Usamos flex para los elementos hijos, y alinearlos en línea */
+  flex-wrap: wrap; /* Asegura que los elementos no se desborden */
+  gap: 15px; /* Espacio entre los elementos */
+}
+
+.purpose-selector-radio div {
+  display: flex; /* Mantenemos cada radio y label en una fila */
+  align-items: center; /* Alineamos verticalmente el radio button y la etiqueta */
+}
+
+input[type="radio"] {
+  margin-right: 5px; /* Espacio entre el radio button y la etiqueta */
+}
+
+input[type="radio"]:disabled + label {
+  color: #aaa; /* Etiquetas de opciones deshabilitadas en gris */
+  cursor: not-allowed;
+}
+
+input[type="radio"]:disabled {
+  cursor: not-allowed;
+}
+
 /* mensaje data loaded y cual otro mensaje del sistema */ 
 .message-container-group {
   display: flex; /* Usamos flexbox para alinear los elementos horizontalmente */

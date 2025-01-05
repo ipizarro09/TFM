@@ -21,17 +21,18 @@ const Questionnaire = ({
       case 'Numeric':
         const questions = [];
 
-        // Pregunta de si las variables están ordenadas
+        // Pregunta de si las variables están ordenadas si hay más de 1D
+        if (nDimensiones !== '1D') {
         questions.push(
           <div key="ordered" className="question-section">
-            <h4>Are variables ordered?</h4>
+            <h4>Is any variable ordered?</h4>
             <select value={ordenadas} onChange={(e) => setOrdenadas(e.target.value)}>
               <option value="Yes">Yes</option>
               <option value="No">No</option>
             </select>
           </div>
         );
-
+      }
         // Condición adicional para mostrar la segunda pregunta sobre su relacion
         if (nDimensiones === '3D+' && ordenadas === 'No' && proposito === 'Part-to-whole') {
           questions.push(

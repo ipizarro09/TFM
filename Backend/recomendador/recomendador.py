@@ -55,7 +55,7 @@ def recommend_rule(data):
     
     if tipo_datos == 'Numeric':
         if n_dimensiones == '1D':
-            if ordenadas == 'Yes' and proposito == 'Distribution':
+            if proposito == 'Distribution':
                 if dataset_size in ['Small', 'Medium']:
                     return 'Histograma'
                 elif dataset_size == 'Big':
@@ -118,7 +118,7 @@ def recommend_rule(data):
                         return 'Correlogram'
                     elif contexto in ['Technical presentation', 'Technical report']:
                         return 'Heatmap'
-                elif proposito == 'Part-to-whole' and relacion == 'Subgroup':
+                elif proposito == 'Part-to-whole' and relacion == 'Subgroup': # no cambiar a nested pues es una pregunta dinamica para estos casos
                     if dataset_size == 'Small':
                         return 'Dendrograma'
                     elif contexto in ['Exploration', 'Non technical report', 'Non technical presentation']:
@@ -142,7 +142,7 @@ def recommend_rule(data):
                 elif contexto in ['Technical presentation', 'Technical report']:
                     return 'Barplot'
             elif proposito == 'Part-to-whole':
-                if relacion == 'Subgroup':
+                if relacion == 'Subgroup': # no cambiar a nested pues es una pregunta dinamica para estos casos
                     if contexto in ['Exploration', 'Non technical report', 'Non technical presentation']:
                         return 'Circular packing'
                     elif contexto in ['Technical presentation', 'Technical report']:
@@ -155,7 +155,7 @@ def recommend_rule(data):
 
         elif n_dimensiones in ['2D', '3D', '3D+']:
             if n_dimensiones in ['2D', '3D'] and relacion == 'Independent' and proposito == 'Part-to-whole':
-                return 'Venn diagram'
+                return 'Venn diagram' # añadir en caso de ser 3D+ podemos usar UpSet plot
             elif relacion == 'Nested':
                 if proposito == 'Part-to-whole':
                     if dataset_size == 'Small':
@@ -211,8 +211,8 @@ def recommend_rule(data):
                         return 'Lollipop'
                     elif contexto in ['Technical presentation', 'Technical report']:
                         return 'Barplot'
-            elif proposito == 'Part-to-whole':
-                if relacion == 'Subgroup':
+            elif proposito == 'Part-to-whole': 
+                if relacion == 'Subgroup': # no cambiar a nested pues es una pregunta dinamica para estos casos
                     if contexto in ['Exploration', 'Non technical report', 'Non technical presentation']:
                         return 'Circular packing'
                     elif contexto in ['Technical presentation', 'Technical report']:

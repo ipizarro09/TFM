@@ -76,11 +76,12 @@ def recommend_rule(data):
                         if contexto in ['Exploration', 'Non technical report', 'Non technical presentation']:
                             return 'Density plot'
                         elif contexto in ['Technical presentation', 'Technical report']:
-                            return 'Violin plot'
-                    elif proposito == 'Evolution':
-                        return 'Scatter with marginal point'
+                            return 'Violin plot'                    
                     elif proposito == 'Correlation':
-                        return '2D Density plot'
+                        if contexto in ['Exploration', 'Non technical report', 'Non technical presentation']:
+                            return '2D Density plot'
+                        elif contexto in ['Technical presentation', 'Technical report']:
+                            return 'Scatter with marginal point'                        
             elif ordenadas == 'Yes':
                 if proposito == 'Correlation':
                     return 'Connected scatterplot'

@@ -85,7 +85,7 @@
                 renderConnectedScatterplotExample, renderSmallMultipleLineplot, renderLinePlot,renderLinePlot2,
                 renderSankey,renderChord_example,renderChord,renderTreemap,renderDonought,renderDonoughtDrill,
                 renderGroupedBarplot,renderGroupedBarplotEjemplo,renderBarplotDinamicoVertical,renderBarplotDinamicoVerticalStacked,
-                renderBarplotDinamicoVerticalStacked2, renderBarplotDinamicoVerticalGrouped } from './miscomponentesd3.js';
+                renderBarplotDinamicoVerticalStacked2, renderBarplotDinamicoVerticalGrouped,renderStackedBarplot  } from './miscomponentesd3.js';
        
         let currentPage = 1;
         const totalPages = 4;
@@ -149,7 +149,8 @@
                 renderBarplotDinamicoHorizontal(zone21,'inmigracion', 'inmigrations', 'reporting_country_name',colorScheme);                
                 renderBarplotDinamicoHorizontal(zone22,'inmigracion', 'inmigrations', 'country_birth_sub-region',colorScheme); 
                 renderBubblePlot(zone23, 'jan', 'death', 'inmigrations', "reporting_country_sub-region", colorScheme);
-                renderBarplotDinamicoVerticalStacked(zone24,'inmigracion', 'inmigrations', 'year',"sex",colorScheme);
+                //renderBarplotDinamicoVerticalStacked(zone24,'inmigracion', 'inmigrations', 'year',"sex",colorScheme);
+                renderGroupedBarplot(zone24,'inmigracion', 'inmigrations', 'year',"sex",colorScheme);
                 renderLinePlot2(zone31, "year", "inmigrations","reporting_country_name",  colorScheme); 
                 renderSmallMultipleLineplot(zone32,'inmigracion','inmigrations_log',"country_birth_name", colorScheme);             
                 renderBubblePlot(zone33, 'jan', 'death', 'inmigrations', "reporting_country_sub-region", colorScheme);
@@ -171,7 +172,8 @@
                 renderRidgeLineImproved(zone14, 'inmigracion', colorScheme,'reporting_country_sub-region');
                 //renderWordCloudDinamica(zone21,'inmigracion', 'inmigrations', 'country_birth_sub-region',colorScheme); // lo quito por problemas de rendimiento
                 renderLollipopPlotDinamico(zone21,'inmigracion', 'inmigrations', 'reporting_country_name',colorScheme);
-                renderLollipopPlotDinamico(zone22,'inmigracion', 'inmigrations', 'country_birth_sub-region',colorScheme);
+                renderStackedBarplot(zone22,'inmigracion', 'inmigrations', 'year',"country_birth_region",colorScheme)
+                //renderLollipopPlotDinamico(zone22,'inmigracion', 'inmigrations', 'country_birth_sub-region',colorScheme);
                 //renderDonought(zone22, "inmigrations",  "country_birth_sub-region", colorScheme ) 
                 renderLollipopPlotDinamicoDrill(zone23,'inmigracion', 'inmigrations', 'country_birth_name',colorScheme);
                 renderDonoughtDrill(zone24, "inmigrations",  "country_birth_name", colorScheme ) ;

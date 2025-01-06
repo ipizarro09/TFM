@@ -5,7 +5,7 @@ import { loadData } from './dataLoader.js';
 // Variable para almacenar la promesa compartida de los datos
 let cachedDataPromise = null;
 
-// Función para obtener los datos, cargándolos solo una vez
+//  para obtener los datos, cargmos solo una vez por rendimiento
 function getCachedData() {
     if (!cachedDataPromise) {
         cachedDataPromise = loadData();
@@ -1346,17 +1346,17 @@ export function renderViolinPlotEjemplo(containerId) {
 
     export function renderBarplotDinamicoHorizontal(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "country_birth_sub-region", colorScheme = "schemeCategory10") {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar contenedor antes de agregar el gráfico
+        container.html(''); // limpiamos contenedor antes de agregar el gráfico
     
         getCachedData().then(data => {
-            // Seleccionar el conjunto de datos según el parámetro dataSource
+            // seleccion0 el conjunto de datos según el parámetro dataSource
             let chartData;
             switch (dataSource) {
                 case 'emigracion':
-                    chartData = data.emigration.withoutTotal; // Usar los datos de emigración
+                    chartData = data.emigration.withoutTotal; //  los datos de emigración
                     break;
                 case 'inmigracion':
-                    chartData = data.inmigration.withoutTotal; // Usar los datos de inmigración
+                    chartData = data.inmigration.withoutTotal; //  los datos de inmigración
                     break;
                 default:
                     console.error('Tipo de datos desconocido:', dataSource);
@@ -2276,30 +2276,38 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
             const dataReady = Array.from(groupedData, ([year, ageGroupMap]) => {
                 return Array.from(ageGroupMap, ([age, records]) => {
                     return {
-                        year: year,
+                        year: +year,
                         age: age,
                         value: d3.sum(records, d => d[yColumn])  // Sumar las inmigraciones para cada año y grupo de edad
                     };
                 });
             }).flat();  // Aplanamos el array para que sea más fácil trabajar con él
-    
-            // Escalas para los ejes X y Y
+            
+            console.log("dadtos scatterplot:" , dataReady);
+             
+           // Filtrar datos únicos para evitar duplicados
+            const uniqueDataReady = Array.from(
+                new Map(dataReady.map(d => [`${d.year}-${d.age}`, d])).values()
+            ); 
+            
+            // Escala X con años únicos
             const x = d3.scaleLinear()
-                .domain(d3.extent(dataReady, d => d.year))  // Usamos el año de los datos agregados
+                .domain(d3.extent(uniqueDataReady, d => d.year)) // Usar años únicos
                 .range([0, width]);
     
             const y = d3.scaleLinear()
-                .domain([0, d3.max(dataReady, d => d.value)])  // Tomamos el máximo de inmigraciones agregadas
+                .domain([0, d3.max(uniqueDataReady, d => d.value)])  // Tomamos el máximo de inmigraciones agregadas
                 .range([height, 0]);
     
             // Escala de color
             const color = d3.scaleOrdinal(d3[colorScheme])
                 .domain(validaAges);
             
-            // Ejes
+            // Configurar ejes
             svg.append("g")
                 .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("d"))); // Ajusta el número de ticks
+
     
             svg.append("g")
                 .call(d3.axisLeft(y));
@@ -2309,27 +2317,27 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
                 .x(d => x(d.year))
                 .y(d => y(d.value));
     
-            // Dibujar las líneas para cada grupo de edad
+            // Dibujar líneas
             svg.selectAll(".line")
-                .data(d3.group(dataReady, d => d.age))  // Agrupar por edad para crear líneas por grupo
-                .enter()
-                .append("path")
-                .attr("class", "line")
-                .attr("d", ([age, values]) => line(values))
-                .attr("stroke", ([age]) => color(age))
-                .style("stroke-width", 4)
-                .style("fill", "none");
-    
-            // Puntos en las líneas
+            .data(d3.group(uniqueDataReady, d => d.age))
+            .enter()
+            .append("path")
+            .attr("class", "line")
+            .attr("d", ([age, values]) => line(values))
+            .attr("stroke", ([age]) => color(age))
+            .style("stroke-width", 4)
+            .style("fill", "none");
+
+            // Dibujar puntos
             svg.selectAll(".points")
-                .data(dataReady)
-                .enter()
-                .append("circle")
-                .attr("cx", d => x(d.year))
-                .attr("cy", d => y(d.value))
-                .attr("r", 5)
-                .attr("stroke", "white")
-                .style("fill", d => color(d.age));
+            .data(uniqueDataReady)
+            .enter()
+            .append("circle")
+            .attr("cx", d => x(d.year))
+            .attr("cy", d => y(d.value))
+            .attr("r", 5)
+            .attr("stroke", "white")
+            .style("fill", d => color(d.age));
     
             // Etiquetas finales de las líneas (solo la última para cada grupo de edad)
             svg.selectAll(".labels")
@@ -2605,6 +2613,110 @@ export function renderSmallMultipleLineplot(containerId, dataSource = "inmigraci
 }
 
 export async function renderLinePlot(containerId, xColumn = "year", yColumn = "inmigrations", groupColumn = "country_birth_name", colorScheme = "schemeCategory10") {
+    const margin = { top: 50, right: 150, bottom: 50, left: 100 },
+        width = 1000 - margin.left - margin.right,
+        height = 600 - margin.top - margin.bottom;
+
+    const container = d3.select(containerId);
+    container.html('');
+
+    const svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    try {
+        const data = await getCachedData();
+        const chartData = data?.inmigration?.withoutTotal;
+
+        if (!chartData || !Array.isArray(chartData)) {
+            console.error('Datos de inmigración no disponibles o mal formateados:', chartData);
+            return;
+        }
+
+        const validaRegions = ['Europe'];
+        const filteredData = chartData.filter(d => validaRegions.includes(d["country_birth_region"]));
+
+        if (!filteredData.length) {
+            console.error('No hay datos después del filtro:', filteredData);
+            return;
+        }
+
+        const groupedData = d3.group(filteredData, d => d[xColumn], d => d[groupColumn]);
+        const dataReady = Array.from(groupedData, ([year, countryMap]) => {
+            return Array.from(countryMap, ([country, records]) => ({
+                year: +year,
+                country: country,
+                value: d3.sum(records, d => +d[yColumn])
+            }));
+        }).flat();
+
+        const uniqueYears = [...new Set(dataReady.map(d => d.year))];
+        const uniqueCountries = Array.from(new Set(dataReady.map(d => d.country)));
+
+        const x = d3.scaleLinear()
+            .domain(d3.extent(uniqueYears)) // Usar años únicos
+            .range([0, width]);
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(dataReady, d => d.value)])
+            .range([height, 0]);
+
+        const color = d3.scaleOrdinal(d3[colorScheme]).domain(uniqueCountries);
+
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("d"))); // Reducir ticks a 5
+
+        svg.append("g").call(d3.axisLeft(y));
+
+        const line = d3.line()
+            .x(d => x(d.year))
+            .y(d => y(d.value));
+
+        svg.selectAll(".line")
+            .data(d3.group(dataReady, d => d.country))
+            .enter()
+            .append("path")
+            .attr("class", "line")
+            .attr("d", ([country, values]) => line(values))
+            .attr("stroke", ([country]) => country === "Ukraine" ? "#ff0000" : "#ccc") // Rojo para Ukraine
+            .style("stroke-width", ([country]) => country === "Ukraine" ? 4 : 2) // Más grueso para Ukraine
+            .style("fill", "none");
+
+        svg.selectAll(".line-label")
+            .data(d3.group(dataReady, d => d.country))
+            .enter()
+            .filter(([country]) => country === "Ukraine" || country === "Russian Federation")
+            .append("text")
+            .datum(([country, values]) => ({
+                country: country,
+                lastValue: values[values.length - 1]
+            }))
+            .attr("transform", d => `translate(${x(d.lastValue.year)},${y(d.lastValue.value)})`)
+            .attr("x", 5)
+            .attr("dy", "-0.5em")
+            .style("font-size", "12px")
+            .style("font-weight", d => d.country === "Ukraine" ? "bold" : "normal")
+            .style("fill", d => d.country === "Ukraine" ? "#ff0000" : "#000")
+            .text(d => d.country);
+
+        svg.append("text")
+            .attr("x", (width + margin.left) / 2)
+            .attr("y", -20)
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("font-weight", "bold")
+            .text(`Evolución de inmigraciones de ${groupColumn} en Europa`);
+
+    } catch (error) {
+        console.error('Error al cargar los datos:', error);
+    }
+}
+
+
+export async function renderLinePlotold(containerId, xColumn = "year", yColumn = "inmigrations", groupColumn = "country_birth_name", colorScheme = "schemeCategory10") {
     const margin = { top: 50, right: 150, bottom: 50, left: 100 },
         width = 1000 - margin.left - margin.right,
         height = 600 - margin.top - margin.bottom;
@@ -3390,17 +3502,16 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
         // Configuración de dimensiones más grandes
         const width = 600,
               height = 600,
-              margin = 100; // Margen amplio para centrar mejor
+              margin = 150; // Margen amplio para centrar mejor
         const radius = Math.min(width, height) / 2 - margin;
 
         // Crear el SVG con un margen explícito
-       // Crear el SVG con un margen explícito
         const svg = container
-        .append("svg")
-        .attr("width", width + margin * 4) // Agregar margen al ancho total
-        .attr("height", height + margin * 2) // Agregar margen al alto total
-        .append("g")
-        .attr("transform", `translate(${(width + margin * 2) / 2 + margin},${(height + margin * 2) / 2})`);
+            .append("svg")
+            .attr("width", width + margin * 2) // Ancho con margen adicional
+            .attr("height", height + margin * 2) // Alto con margen adicional
+            .append("g")
+            .attr("transform", `translate(${(width + margin * 2) / 2},${(height + margin * 2) / 2})`);
 
         // Escala de colores
         const color = d3.scaleOrdinal()
@@ -3419,8 +3530,8 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
             .outerRadius(radius * 0.9);
 
         const outerArc = d3.arc()
-            .innerRadius(radius * 1.1)
-            .outerRadius(radius * 1.1);
+            .innerRadius(radius * 1.4) // Aumentar distancia para las líneas
+            .outerRadius(radius * 1.4);
 
         // Calcular el total de valores para filtrar etiquetas pequeñas
         const totalValue = d3.sum(dataEntries, d => d.value);
@@ -3451,7 +3562,7 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
                 const posB = outerArc.centroid(d); // Línea de quiebre
                 const posC = [...outerArc.centroid(d)]; // Posición de la etiqueta
                 const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-                posC[0] += midangle < Math.PI ? 15 : -15; // Ajuste horizontal para evitar superposición
+                posC[0] += midangle < Math.PI ? 25 : -25; // Separar horizontalmente
                 return [posA, posB, posC];
             });
 
@@ -3465,7 +3576,7 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
                 if (d.data.value < threshold) return null; // Omitir etiquetas para valores bajos
                 const pos = [...outerArc.centroid(d)];
                 const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-                pos[0] += midangle < Math.PI ? 25 : -25; // Mover etiquetas horizontalmente según su posición
+                pos[0] += midangle < Math.PI ? 30 : -30; // Aumentar desplazamiento horizontal
                 return `translate(${pos})`;
             })
             .style("font-size", "14px")
@@ -3475,18 +3586,18 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
             })
             .style("font-weight", "bold");
 
-            // Añadir título al gráfico
-            svg.append("text")
-            .attr("x", 45)
-            .attr("y", -350)
+        // Añadir título al gráfico
+        svg.append("text")
+            .attr("x", 0)
+            .attr("y", -height / 2 + margin / 3)
             .attr("text-anchor", "middle")
             .style("font-size", "16px")
             .style("font-weight", "bold")
-            .text(`Ranking de inmigración por sub-region de nacimiento`);
-
+            .text(`Ranking de inmigración por sub-región de nacimiento`);
 
     }).catch(error => console.error('Error al cargar los datos:', error));
 }
+
 
 export function renderDonoughtDrill(containerId, yColumn = "inmigrations", groupColumn = "country_birth_name", colorScheme = "schemeCategory10") {
     const container = d3.select(containerId);
@@ -3612,7 +3723,7 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
     }).catch(error => console.error('Error al cargar los datos:', error));
 }
 
-export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yColumn = "inmigrations", xColumn="year", groupColumn = "sex", colorScheme = "schemeCategory10") {
+export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yColumn = "inmigrations", xColumn = "year", groupColumn = "sex", colorScheme = "schemeCategory10") {
     const container = d3.select(containerId);
     container.html(''); // Limpiar el contenedor antes de agregar el gráfico
 
@@ -3643,18 +3754,22 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
             d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU" && d["country_birth_name"] !== "Europe"
         );
 
-        console.log("Datos a enseñar en grouped barplot:", filteredData);
-
-        // Obtener los valores únicos de los años (xColumn)
+        // Obtener los valores únicos de los años (xColumn) y sexos (groupColumn)
         const years = Array.from(new Set(filteredData.map(d => d[xColumn])));
+        const sexes = Array.from(new Set(filteredData.map(d => d[groupColumn])));
 
         // Agrupar por año y sexo
-        const groupedData = d3.rollup(filteredData, v => d3.sum(v, d => +d[yColumn]), d => d[xColumn], d => d[groupColumn]);
+        const groupedData = d3.rollup(
+            filteredData,
+            v => d3.sum(v, d => +d[yColumn]), 
+            d => d[xColumn], 
+            d => d[groupColumn]
+        );
 
-        // Configuración del gráfico
-        const margin = { top: 10, right: 30, bottom: 40, left: 50 },
-            width = 800 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom;
+       // Configuración del gráfico
+       const margin = { top: 60, right: 150, bottom: 60, left: 100 },
+       width = 800 - margin.left - margin.right,
+       height = 600 - margin.top - margin.bottom;
 
         // Crear el SVG
         const svg = container.append("svg")
@@ -3670,23 +3785,27 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
             .padding(0.1);
 
         svg.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x).tickSize(0));
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x).tickSize(0))
+            .selectAll("text")
+            .style("text-anchor", "middle");
 
         // Escala del eje Y (por los valores de inmigración)
         const y = d3.scaleLinear()
-            .domain([0, d3.max(filteredData, d => +d[yColumn])])
+            .domain([0, d3.max(Array.from(groupedData.values(), yearMap => 
+                Array.from(yearMap.values()).reduce((a, b) => a + b, 0)
+            ))])
+            .nice()
             .range([height, 0]);
 
-        svg.append("g")
-            .call(d3.axisLeft(y));
+        svg.append("g").call(d3.axisLeft(y));
 
         // Escala de color para las categorías de sexo
-        const color = d3.scaleOrdinal(d3[colorScheme]);
+        const color = d3.scaleOrdinal(d3[colorScheme]).domain(sexes);
 
-        // Ancho de las barras (se dividen entre las categorías de sexo)
+        // Escala para subdividir barras por sexo dentro de cada año
         const xSubgroup = d3.scaleBand()
-            .domain(["F", "M"])
+            .domain(sexes)
             .range([0, x.bandwidth()])
             .padding(0.05);
 
@@ -3696,23 +3815,198 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
             .data(years)
             .enter()
             .append("g")
-            .attr("transform", function(d) { return "translate(" + x(d) + ",0)"; })
+            .attr("transform", d => `translate(${x(d)},0)`)
             .selectAll("rect")
-            .data(function(d) {
-                return ["F", "M"].map(function(sex) {
-                    const value = groupedData.get(d)?.get(sex) || 0;
-                    return { key: sex, value: value };
-                });
-            })
+            .data(d => sexes.map(sex => ({
+                sex,
+                year: d,
+                value: groupedData.get(d)?.get(sex) || 0 // Obtener valor agrupado
+            })))
             .enter().append("rect")
-            .attr("x", function(d) { return xSubgroup(d.key); })
-            .attr("y", function(d) { return y(d.value); })
+            .attr("x", d => xSubgroup(d.sex))
+            .attr("y", d => y(d.value))
             .attr("width", xSubgroup.bandwidth())
-            .attr("height", function(d) { return height - y(d.value); })
-            .attr("fill", function(d) { return color(d.key); });
+            .attr("height", d => height - y(d.value))
+            .attr("fill", d => color(d.sex));
+        
+        // Añadir título al gráfico
+        svg.append("text")
+            .attr("x", width / 2) // Centrar horizontalmente
+            .attr("y", -20) // Posición vertical arriba del gráfico
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("font-weight", "bold")
+            .text("Ranking de inmigración por año y región");
+
+        // Añadir leyenda
+        const legend = svg.append("g")
+            .attr("transform", `translate(${width + 20}, 20)`);
+
+        sexes.forEach((sex, i) => {
+            const legendRow = legend.append("g")
+                .attr("transform", `translate(0, ${i * 20})`);
+
+            legendRow.append("rect")
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("fill", color(sex));
+
+            legendRow.append("text")
+                .attr("x", 20)
+                .attr("y", 12)
+                .text(sex)
+                .style("text-anchor", "start")
+                .style("font-size", "12px");
+        });
 
     }).catch(error => console.error('Error al cargar los datos:', error));
 }
+
+
+export function renderStackedBarplot(containerId, dataSource = "inmigracion", yColumn = "inmigrations", xColumn = "year", groupColumn = "country_birth_region", colorScheme = "schemeCategory10") {
+    const container = d3.select(containerId);
+    container.html(''); // Limpiar el contenedor antes de agregar el gráfico
+
+    getCachedData().then(data => {
+        // Seleccionar el conjunto de datos según el parámetro dataSource
+        let chartData;
+        switch (dataSource) {
+            case 'emigracion':
+                chartData = data.emigration.withoutTotal;
+                break;
+            case 'inmigracion':
+                chartData = data.inmigration.withoutTotal;
+                break;
+            default:
+                console.error('Tipo de datos desconocido:', dataSource);
+                return;
+        }
+
+        if (!Array.isArray(chartData)) {
+            console.error('chartData no es un array:', chartData);
+            return;
+        }
+
+        // Filtrar los datos para eliminar registros no deseados
+        const filteredData = chartData.filter(d =>
+            d[groupColumn] !== "UNKNOWN" && d[groupColumn] !== "Other" && d[groupColumn] !== "Todas" &&
+            d["country_birth"] !== "US" && d["country_birth"] !== "IN" &&
+            d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU" && d["country_birth_name"] !== "Europe"
+        );
+
+        // Obtener los valores únicos de los años (xColumn) y regiones (groupColumn)
+        const years = Array.from(new Set(filteredData.map(d => d[xColumn])));
+        const regions = Array.from(new Set(filteredData.map(d => d[groupColumn])));
+
+        // Agrupar por año y región
+        const groupedData = d3.rollup(
+            filteredData,
+            v => d3.sum(v, d => +d[yColumn]), 
+            d => d[xColumn], 
+            d => d[groupColumn]
+        );
+
+        // Transformar los datos para formato apilado
+        const stackData = years.map(year => {
+            const yearData = { year };
+            regions.forEach(region => {
+                yearData[region] = groupedData.get(year)?.get(region) || 0;
+            });
+            return yearData;
+        });
+
+        // Configuración del gráfico
+        const margin = { top: 60, right: 150, bottom: 60, left: 100 },
+            width = 800 - margin.left - margin.right,
+            height = 600 - margin.top - margin.bottom;
+
+        // Crear el SVG
+        const svg = container.append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Escala del eje X (por los años)
+        const x = d3.scaleBand()
+            .domain(years)
+            .range([0, width])
+            .padding(0.1);
+
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x).tickSize(0))
+            .selectAll("text")
+            .style("text-anchor", "middle");
+
+        // Escala del eje Y (por los valores de inmigración)
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(stackData, d => 
+                regions.reduce((sum, region) => sum + d[region], 0)
+            )])
+            .nice()
+            .range([height, 0]);
+
+        svg.append("g").call(d3.axisLeft(y));
+
+        // Escala de color para las categorías de región
+        const color = d3.scaleOrdinal(d3[colorScheme]).domain(regions);
+
+        // Crear el stack generator
+        const stack = d3.stack()
+            .keys(regions);
+
+        const series = stack(stackData);
+
+        // Dibujar las barras apiladas
+        svg.append("g")
+            .selectAll("g")
+            .data(series)
+            .enter()
+            .append("g")
+            .attr("fill", d => color(d.key))
+            .selectAll("rect")
+            .data(d => d)
+            .enter()
+            .append("rect")
+            .attr("x", d => x(d.data.year))
+            .attr("y", d => y(d[1]))
+            .attr("height", d => y(d[0]) - y(d[1]))
+            .attr("width", x.bandwidth());
+
+        // Añadir título al gráfico
+        svg.append("text")
+            .attr("x", width / 2) // Centrar horizontalmente
+            .attr("y", -20) // Posición vertical arriba del gráfico
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("font-weight", "bold")
+            .text("Ranking de inmigración por año y región");
+
+        // Añadir leyenda
+        const legend = svg.append("g")
+            .attr("transform", `translate(${width + 20}, 20)`);
+
+        regions.forEach((region, i) => {
+            const legendRow = legend.append("g")
+                .attr("transform", `translate(0, ${i * 20})`);
+
+            legendRow.append("rect")
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("fill", color(region));
+
+            legendRow.append("text")
+                .attr("x", 20)
+                .attr("y", 12)
+                .text(region)
+                .style("text-anchor", "start")
+                .style("font-size", "12px");
+        });
+
+    }).catch(error => console.error('Error al cargar los datos:', error));
+}
+
 
 
 export function renderGroupedBarplotEjemplo(containerId) {
@@ -4165,7 +4459,7 @@ export function renderBarplotDinamicoVerticalStacked2(containerId, dataSource = 
     }
     
 
-export async function renderLinePlot2(containerId, xColumn = "year", yColumn = "inmigrations", groupColumn = "reporting_country_name", colorScheme = "schemeCategory10") {
+    export async function renderLinePlot2(containerId, xColumn = "year", yColumn = "inmigrations", groupColumn = "reporting_country_name", colorScheme = "schemeCategory10") {
         const margin = { top: 50, right: 150, bottom: 50, left: 100 },
             width = 1000 - margin.left - margin.right,
             height = 600 - margin.top - margin.bottom;
@@ -4181,27 +4475,21 @@ export async function renderLinePlot2(containerId, xColumn = "year", yColumn = "
     
         try {
             const data = await getCachedData();
-            console.log('Datos cargados:', data);
-    
             const chartData = data?.inmigration?.withoutTotal;
+    
             if (!chartData || !Array.isArray(chartData)) {
                 console.error('Datos de inmigración no disponibles o mal formateados:', chartData);
                 return;
             }
     
-            const filteredData = chartData
-            //console.log('Datos filtrados:', filteredData);
+            const filteredData = chartData;
     
             if (!filteredData.length) {
                 console.error('No hay datos después del filtro:', filteredData);
                 return;
             }
-            //console.log('Ejemplo de filteredData:', filteredData[0]);
-            //console.log('xColumn:', xColumn, '->', filteredData[0]?.[xColumn]);
-            //console.log('groupColumn:', groupColumn, '->', filteredData[0]?.[groupColumn]);
     
             const groupedData = d3.group(filteredData, d => d[xColumn], d => d[groupColumn]);
-            //console.log('Datos groupedData para el gráfico:', groupedData);
             const dataReady = Array.from(groupedData, ([year, countryMap]) => {
                 return Array.from(countryMap, ([country, records]) => ({
                     year: +year,
@@ -4210,28 +4498,22 @@ export async function renderLinePlot2(containerId, xColumn = "year", yColumn = "
                 }));
             }).flat();
     
-            console.log('Datos preparados para el gráfico:', dataReady);
+            const uniqueYears = [...new Set(dataReady.map(d => d.year))];
+            const uniqueCountries = Array.from(new Set(dataReady.map(d => d.country)));
     
             const x = d3.scaleLinear()
-                .domain(d3.extent(dataReady, d => d.year))
+                .domain(d3.extent(uniqueYears)) // Usar años únicos
                 .range([0, width]);
     
             const y = d3.scaleLinear()
                 .domain([0, d3.max(dataReady, d => d.value)])
                 .range([height, 0]);
     
-            if (!x.domain() || !y.domain()) {
-                console.error('Las escalas no pudieron ser configuradas correctamente.');
-                return;
-            }
-    
-            const uniqueCountries = Array.from(new Set(dataReady.map(d => d.country)));
-    
             const color = d3.scaleOrdinal(d3[colorScheme]).domain(uniqueCountries);
     
             svg.append("g")
                 .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+                .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("d"))); // Reducir ticks a 5
     
             svg.append("g").call(d3.axisLeft(y));
     
@@ -4245,29 +4527,26 @@ export async function renderLinePlot2(containerId, xColumn = "year", yColumn = "
                 .append("path")
                 .attr("class", "line")
                 .attr("d", ([country, values]) => line(values))
-                .attr("stroke", ([country]) => country === "Germany" ? "#ff0000" : "#ccc") // Color rojo para Ukraine, gris para el resto
-                .style("stroke-width", ([country]) => country === "Germany" ? 4 : 2) // Más gruesa para Ukraine
-                //.attr("stroke", ([country]) => color(country))
-                //.style("stroke-width", 2)
+                .attr("stroke", ([country]) => country === "Germany" ? "#ff0000" : "#ccc") // Rojo para Germany
+                .style("stroke-width", ([country]) => country === "Germany" ? 4 : 2) // Más grueso para Germany
                 .style("fill", "none");
     
-            // Añadir etiqueta solo para Germany
             svg.selectAll(".line-label")
-            .data(d3.group(dataReady, d => d.country)) // Agrupar datos por país
-            .enter()
-            .filter(([country]) => country === "Germany" || country === "Spain") // Filtrar solo Ukraine
-            .append("text")
-            .datum(([country, values]) => ({
-                country: country,
-                lastValue: values[values.length - 1] // Último valor de la línea
-            }))
-            .attr("transform", d => `translate(${x(d.lastValue.year)},${y(d.lastValue.value)})`) // Posicionar al final de la línea
-            .attr("x", 5) // Desplazar un poco a la derecha para que no toque la línea
-            .attr("dy", "-0.5em") // Desplazar hacia arriba para que quede sobre la línea
-            .style("font-size", "12px")
-            .style("font-weight", d => d.country === "Germany" ? "bold" : "normal") // Destacar si es Ukraine
-            .style("fill", d => d.country === "Germany" ? "#ff0000" : "#000") // Color del texto
-            .text(d => d.country); // Mostrar "Germany" como texto
+                .data(d3.group(dataReady, d => d.country))
+                .enter()
+                .filter(([country]) => country === "Germany" || country === "Spain")
+                .append("text")
+                .datum(([country, values]) => ({
+                    country: country,
+                    lastValue: values[values.length - 1]
+                }))
+                .attr("transform", d => `translate(${x(d.lastValue.year)},${y(d.lastValue.value)})`)
+                .attr("x", 5)
+                .attr("dy", "-0.5em")
+                .style("font-size", "12px")
+                .style("font-weight", d => d.country === "Germany" ? "bold" : "normal")
+                .style("fill", d => d.country === "Germany" ? "#ff0000" : "#000")
+                .text(d => d.country);
     
             svg.append("text")
                 .attr("x", (width + margin.left) / 2)
@@ -4281,5 +4560,4 @@ export async function renderLinePlot2(containerId, xColumn = "year", yColumn = "
             console.error('Error al cargar los datos:', error);
         }
     }
-    
     

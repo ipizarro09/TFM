@@ -28,18 +28,83 @@ function App() {
   const parsedRecommendation = recommendation ? JSON.parse(recommendation) : null;
 
   const getEnabledPurposes = () => {
+
+    // Casos solo Distribution
     if (tipoDatos === 'Numeric' && nDimensiones === '1D') {
       return ['Distribution']; // Solo habilitar 'Distribution'
     }
+
     // Caso para 2D o 3D Numeric: habilitar 'Distribution', 'Correlation' y 'Evolution'
-    if (tipoDatos === 'Numeric' && (nDimensiones === '2D' || nDimensiones === '3D')) {
-      return ['Distribution', 'Correlation', 'Evolution']; // Solo 'Distribution', 'Correlation' y 'Evolution'
+    if (tipoDatos === 'Numeric' && (nDimensiones === '2D' || nDimensiones === '3D') && (ordenadas === 'No' || ordenadas === 'Not applicable')) {
+      return ['Distribution', 'Correlation']; // Solo 'Distribution', 'Correlation' 
+    }
+
+    if (tipoDatos === 'Numeric' && (nDimensiones === '2D' ) && ordenadas === 'Yes') {
+      return ['Evolution', 'Correlation']; // Solo 'Evolution'
+    }
+
+    if (tipoDatos === 'Numeric' && (nDimensiones === '3D'|| nDimensiones === '3D+') && ordenadas === 'Yes') {
+      return ['Evolution']; // Solo 'Evolution'
     }
     
     // Caso para 3D+ Numeric: habilitar 'Distribution', 'Correlation' 'Evolution' y 'Parte-todo'
-    if (tipoDatos === 'Numeric' && nDimensiones === '3D+' ) {
-      return ['Distribution', 'Correlation', 'Evolution','Part-to-whole']; // Solo 'Distribution', 'Correlation' y 'Evolution'
+    if (tipoDatos === 'Numeric' && nDimensiones === '3D+' && (ordenadas === 'No' || ordenadas === 'Not applicable')) {
+      return ['Distribution', 'Correlation', 'Part-to-whole']; // Solo 'Distribution', 'Correlation' y 'Part-to-whole'
     }
+
+    // Categorical
+    if (tipoDatos === 'Categorical' && nDimensiones === '1D') {
+      return ['Ranking', 'Part-to-whole']; // Solo 'Distribution', 'Correlation' y 'Part-to-whole'
+    }
+
+    if (tipoDatos === 'Categorical' && (nDimensiones === '1D' || nDimensiones === '2D')  && relacion === 'Independent') {
+      return ['Part-to-whole']; // caso especial
+    }
+
+    if (tipoDatos === 'Categorical' && (nDimensiones === '2D' || nDimensiones === '3D' || nDimensiones === '3D+')  && relacion === 'Subgroup') {
+      return ['Ranking','Part-to-whole','Correlation', 'Flow']; // caso especial
+    }
+
+    if (tipoDatos === 'Categorical' && (nDimensiones === '2D' || nDimensiones === '3D' || nDimensiones === '3D+')  && relacion === 'Nested') {
+      return ['Ranking','Part-to-whole']; // caso especial
+    }
+
+    if (tipoDatos === 'Categorical' && (nDimensiones === '2D' || nDimensiones === '3D' || nDimensiones === '3D+')  && relacion === 'Adjacency') {
+      return ['Correlation', 'Flow']; // caso especial
+    }
+
+    if (tipoDatos === '1NUM1CAT' && obsGrupo === 'Several') {
+      return ['Distribution']; // Solo habilitar 'Distribution'
+    }
+
+    if (tipoDatos === '1NUM1CAT' && obsGrupo === 'One') {
+      return ['Distribution','Part-to-whole', 'Ranking']; // Solo habilitar 'Distribution'
+    }
+
+    if (tipoDatos === '1CAT+2+NUM' && obsGrupo === 'Several' && ordenadas === 'No') {
+      return ['Distribution','Correlation']; // Solo habilitar 'Distribution'
+    }
+    if (tipoDatos === '1CAT+2+NUM' && obsGrupo === 'Several' && ordenadas === 'Yes') {
+      return ['Evolution','Correlation']; // Solo habilitar 'Distribution'
+    }
+    if (tipoDatos === '1CAT+2+NUM' && obsGrupo === 'One') {
+      return ['Ranking','Part-to-whole','Flow','Correlation']; // Solo habilitar 
+    }
+    if (tipoDatos === '1NUM2+CAT' && relacion === 'Subgroup' && obsGrupo === 'One') {
+      return ['Ranking','Part-to-whole','Flow','Correlation']; // Solo habilitar 
+    }
+    if (tipoDatos === '1NUM2+CAT' && relacion === 'Subgroup' && obsGrupo === 'Several') {
+      return ['Distribution']; // Solo habilitar 
+    }
+    if (tipoDatos === '1NUM2+CAT' && relacion === 'Nested' && obsGrupo === 'One') {
+      return ['Ranking','Part-to-whole'];
+    } // 
+    if (tipoDatos === '1NUM2+CAT' && relacion === 'Nested' && obsGrupo === 'Several') {
+      return ['Distribution'];
+    } //
+    if (tipoDatos === '1NUM2+CAT' && relacion === 'Adjacency') {
+      return ['Flow','Correlation'];
+    } //
 
     return ['Distribution', 'Correlation', 'Ranking', 'Part-to-whole', 'Evolution', 'Flow']; // Habilitar todos por defecto
   };
@@ -102,6 +167,7 @@ function App() {
     setOrdenadas('Not applicable');
     setRelacion('Not applicable');
     setObsGrupo('Not applicable');
+    //setProposito('');
   }, [selectedVars]); // Este efecto se activará cada vez que cambie selectedVars
 
   const handlePurposeChange = (value) => setProposito(value);
@@ -221,11 +287,6 @@ function App() {
         {/* <VariableSelector dataset={dataset} selectedVars={selectedVars} setSelectedVars={setSelectedVars} /> */}
 
           {/*<VisualizationPurposeSelector onSelectPurpose={handlePurposeChange} />*/}
-          <VisualizationPurposeSelector 
-            onSelectPurpose={handlePurposeChange} 
-            enabledPurposes={getEnabledPurposes()} 
-          />
-          <VisualizationContextSelector onSelectContext={handleContextChange} />
           <Questionnaire
             tipoDatos={tipoDatos} 
             selectedVars={selectedVars} 
@@ -241,6 +302,12 @@ function App() {
             setObsGrupo={setObsGrupo}
             setNGruposAlto={setNGruposAlto} 
           />
+          <VisualizationPurposeSelector 
+            onSelectPurpose={handlePurposeChange} 
+            enabledPurposes={getEnabledPurposes()} 
+          />
+          <VisualizationContextSelector onSelectContext={handleContextChange} />
+          
         </>
       )}
       </div>
@@ -308,7 +375,7 @@ function App() {
                 <div className="chart-content">
                 {parsedRecommendation.ai_based && (
                   <img
-                    src={`/charts/${parsedRecommendation.ai_based}.png`}
+                    src={`/charts/${parsedRecommendation.rule_based}.png`}
                     alt={`Recommended chart: ${parsedRecommendation.ai_based}`}
                     className="chart-image"
                   />

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'; // useEffect para refrescar
 import FileUploader from './components/FileUploader';
-import VariableSelector from './components/VariableSelector';
+//import VariableSelector from './components/VariableSelector';  // ya no se usa desde 05/01
 import DataTypeSelector from './components/DataTypeSelector';
 import VisualizationPurposeSelector from './components/VisualizationPurposeSelector';
 import VisualizationContextSelector from './components/VisualizationContextSelector';
 import Questionnaire from './components/Questionnaire';
-import DataTypeCard from './components/DataTypeCard';
+import DataTypeCard from './components/DataTypeCard'; // cambio de 05/01 para sustituir a VariableSelector
 import * as d3 from 'd3';
 import './App.css';
 
@@ -29,7 +29,7 @@ function App() {
 
   const getEnabledPurposes = () => {
 
-    // Casos solo Distribution
+    // Casos donde los propósitos del análisis se tiene que restringir según los tipo de datos y el numero de dimensiones que se seleccionan o otras variables
     if (tipoDatos === 'Numeric' && nDimensiones === '1D') {
       return ['Distribution']; // Solo habilitar 'Distribution'
     }
@@ -40,7 +40,7 @@ function App() {
     }
 
     if (tipoDatos === 'Numeric' && (nDimensiones === '2D' ) && ordenadas === 'Yes') {
-      return ['Evolution', 'Correlation']; // Solo 'Evolution'
+      return ['Evolution', 'Correlation']; // Solo 'Evolution' Correlacion
     }
 
     if (tipoDatos === 'Numeric' && (nDimensiones === '3D'|| nDimensiones === '3D+') && ordenadas === 'Yes') {
@@ -54,7 +54,7 @@ function App() {
 
     // Categorical
     if (tipoDatos === 'Categorical' && nDimensiones === '1D') {
-      return ['Ranking', 'Part-to-whole']; // Solo 'Distribution', 'Correlation' y 'Part-to-whole'
+      return ['Ranking', 'Part-to-whole']; // Solo 'Ranking',  'Part-to-whole'
     }
 
     if (tipoDatos === 'Categorical' && (nDimensiones === '1D' || nDimensiones === '2D')  && relacion === 'Independent') {
@@ -74,42 +74,42 @@ function App() {
     }
 
     if (tipoDatos === '1NUM1CAT' && obsGrupo === 'Several') {
-      return ['Distribution']; // Solo habilitar 'Distribution'
+      return ['Distribution']; // caso especial
     }
 
     if (tipoDatos === '1NUM1CAT' && obsGrupo === 'One') {
-      return ['Distribution','Part-to-whole', 'Ranking']; // Solo habilitar 'Distribution'
+      return ['Distribution','Part-to-whole', 'Ranking']; // caso especial
     }
 
     if (tipoDatos === '1CAT+2+NUM' && obsGrupo === 'Several' && ordenadas === 'No') {
-      return ['Distribution','Correlation']; // Solo habilitar 'Distribution'
+      return ['Distribution','Correlation']; // caso especial
     }
     if (tipoDatos === '1CAT+2+NUM' && obsGrupo === 'Several' && ordenadas === 'Yes') {
-      return ['Evolution','Correlation']; // Solo habilitar 'Distribution'
+      return ['Evolution','Correlation']; // caso especial
     }
     if (tipoDatos === '1CAT+2+NUM' && obsGrupo === 'One') {
-      return ['Ranking','Part-to-whole','Flow','Correlation']; // Solo habilitar 
+      return ['Ranking','Part-to-whole','Flow','Correlation']; // caso especial
     }
     if (tipoDatos === '1NUM2+CAT' && relacion === 'Subgroup' && obsGrupo === 'One') {
-      return ['Ranking','Part-to-whole','Flow','Correlation']; // Solo habilitar 
+      return ['Ranking','Part-to-whole','Flow','Correlation']; // caso especial
     }
     if (tipoDatos === '1NUM2+CAT' && relacion === 'Subgroup' && obsGrupo === 'Several') {
-      return ['Distribution']; // Solo habilitar 
+      return ['Distribution']; // caso especial
     }
     if (tipoDatos === '1NUM2+CAT' && relacion === 'Nested' && obsGrupo === 'One') {
-      return ['Ranking','Part-to-whole'];
-    } // 
+      return ['Ranking','Part-to-whole']; 
+    } // caso especial
     if (tipoDatos === '1NUM2+CAT' && relacion === 'Nested' && obsGrupo === 'Several') {
       return ['Distribution'];
-    } //
+    } // caso especial
     if (tipoDatos === '1NUM2+CAT' && relacion === 'Adjacency') {
       return ['Flow','Correlation'];
-    } //
+    } // caso especial
 
     return ['Distribution', 'Correlation', 'Ranking', 'Part-to-whole', 'Evolution', 'Flow']; // Habilitar todos por defecto
   };
 
-   // Estado para controlar si el botón debe estar habilitado
+   // Estado para controlar si el botón debe estar habilitado - si no se selecciona proposito y contexto desabilitalo
    const isButtonDisabled = !proposito || !contexto;
 
   // Handler para la carga de archivo
@@ -170,10 +170,11 @@ function App() {
     //setProposito('');
   }, [selectedVars]); // Este efecto se activará cada vez que cambie selectedVars
 
+  // Handler para la carga de checkboxes porposito y contexto
   const handlePurposeChange = (value) => setProposito(value);
   const handleContextChange = (value) => setContexto(value);
 
-  // llamada al servidor server.js backend en su endpoint
+  // llamada POST al servidor server.js backend en su endpoint pasando datos y pidiendo recomendacion
   const sendData = async (data) => {
     console.log(data);
     setIsLoading(true); // Mostramos el indicador de carga
@@ -187,7 +188,7 @@ function App() {
 
       if (response.ok) {
         const result = await response.json();
-        setRecommendation(result.recommendation); // Actualizar recomendación
+        setRecommendation(result.recommendation); // Actualizamos recomendación
       } else {
         console.error("Error al obtener la recomendación");
       }
@@ -198,7 +199,7 @@ function App() {
     }
   };
 
-    // Efecto para renderizar el gráfico de D3.js según la recomendación
+    // Ejemplos de efecto para renderizar el gráfico de D3.js según la recomendación en un futuro
     useEffect(() => {
       // Si la recomendación es "Barplot", renderizamos el gráfico
       if (recommendation === 'Barplot') {
@@ -236,7 +237,7 @@ function App() {
       };
     }, [recommendation]);
   
-
+ // JSX
   return (
     <div className="App">
       <header className="app-header">
@@ -258,8 +259,8 @@ function App() {
             </div>
           )}
           </div>
-          <h4>Detected Data types:</h4>
-
+          <h4>Select variables to analyze from below detected variables and data types:</h4>
+       
           <div className="data-type-cards">
             {Object.entries(columnTypes).map(([column, type]) => (
               <DataTypeCard
@@ -277,8 +278,6 @@ function App() {
             ))}
           </div>
 
-
- 
         </div>
       )}
       {dataset && (
@@ -343,7 +342,7 @@ function App() {
             obs_grupo: obsGrupo || "Not applicable"       // Valor predeterminado
                 })
         }
-        disabled={isButtonDisabled} // Deshabilitar si falta propósito o contexto
+        disabled={isButtonDisabled} // Deshabilitarlo si falta propósito o contexto
       >
         Recommend graph
       </button>
@@ -392,8 +391,6 @@ function App() {
               Ir a la visualización
             </a>
           </div> </div>
-          
-              
 
               </div>
             </div>
@@ -403,8 +400,6 @@ function App() {
     </div>
   );
 }
-
-
 
 
 export default App;

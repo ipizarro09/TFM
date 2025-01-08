@@ -30,7 +30,7 @@ app.post('/submit-form', async (req, res) => {
 
     const { tipo_datos, n_dimensiones, proposito, contexto } = req.body;
 
-    // Insertar respuestas en la base de datos
+    // Insertarmos las respuestas en la base de datos
     const result = await pool.query(
       `INSERT INTO respuestas (n_dimensiones,tipo_datos,ordenadas,n_grupos_alto,relacion,obs_grupo,proposito,dataset_size,contexto)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id` ,
@@ -39,7 +39,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id` ,
 
     const id = result.rows[0].id; // ID recién creado
 
-    // Llamar al recomendador Python
+    // Llamamos al recomendador Python
     const pythonProcess = spawn('python', ['./recomendador/recomendador.py', id]);
 
     let pythonOutput = '';
@@ -55,13 +55,13 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id` ,
       if (code === 0) {
         const recommendedGraph = pythonOutput.trim();
 
-        // Actualizar la base de datos con la recomendación del gráfico
+        // Actualizo la base de datos con la recomendación del gráfico así lo uso como dataset sintetico para IA
         await pool.query(
           `UPDATE respuestas SET grafico_recomendado = $1 WHERE id = $2`,
           [recommendedGraph, id]
         );
 
-        res.json({ recommendation: pythonOutput.trim() }); // Enviar la recomendación al cliente
+        res.json({ recommendation: pythonOutput.trim() }); // Enviamos la recomendación al cliente
       } else {
         res.status(500).send('Error al ejecutar el recomendador.');
       }
@@ -72,7 +72,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id` ,
   }
 });
 
-// Iniciar el servidor
+// Inicia el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

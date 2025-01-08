@@ -21,7 +21,7 @@ const Questionnaire = ({
       case 'Numeric':
         const questions = [];
 
-        // Pregunta de si las variables están ordenadas si hay más de 1D
+        // Pregunta de si hay una variable ordenada si hay más de 1D
         if (nDimensiones !== '1D') {
         questions.push(
           <div key="ordered" className="question-section">
@@ -137,6 +137,7 @@ const Questionnaire = ({
               </select>
             </div>
             )}
+            {/* Condicional: Si es 'One' y los propositos son parte todo o correlacion necesitamos saber si se esperan muchos grupos */}
             {obsGrupo === 'One' && (proposito === 'Part-to-whole' || proposito === 'Correlation') && (
             <div key="n_grupos_alto"  className="question-section">
               <h4>Do you foresee high number of groups?</h4>

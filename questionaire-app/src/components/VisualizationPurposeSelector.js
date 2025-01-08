@@ -13,7 +13,7 @@ const VisualizationPurposeSelector = ({ onSelectPurpose,enabledPurposes }) => {
           id={purpose}
           name="purpose"
           onChange={() => onSelectPurpose(purpose)}
-          disabled={!enabledPurposes.includes(purpose)} // Deshabilitar si no está habilitado
+          disabled={!enabledPurposes.includes(purpose)} // Deshabilita si no está habilitado cambios del 05/01
         />
         <label htmlFor={purpose} style={{ color: !enabledPurposes.includes(purpose) ? '#aaa' : '#000' }}>
           {purpose}
@@ -23,26 +23,8 @@ const VisualizationPurposeSelector = ({ onSelectPurpose,enabledPurposes }) => {
   </div>
 </div>
   );
-  /*
-  return (
-    <div >
-      <h4>Select Visualization Purpose</h4>
-      {['Distribution', 'Correlation', 'Ranking', 'Part-to-whole', 'Evolution', 'Flow'].map((purpose) => (
-        <label key={purpose}>
-          <input
-            type="radio"
-            name="purpose"
-            onChange={() => onSelectPurpose(purpose)}
-          />
-          {purpose}
-        </label>
-      ))}
-    </div>
-  );*/
+  
 };
-
-
-
 
 
 export default VisualizationPurposeSelector;

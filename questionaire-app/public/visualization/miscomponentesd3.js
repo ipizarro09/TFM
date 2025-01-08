@@ -5,7 +5,7 @@ import { loadData } from './dataLoader.js';
 // Variable para almacenar la promesa compartida de los datos
 let cachedDataPromise = null;
 
-//  para obtener los datos, cargmos solo una vez por rendimiento
+//  para Obtengo los datos, cargmos solo una vez por rendimiento
 function getCachedData() {
     if (!cachedDataPromise) {
         cachedDataPromise = loadData();
@@ -41,19 +41,19 @@ export function renderHistogram(containerId, colorScheme = "schemeCategory10") {
         // Extraer los datos de la columna 'inmigrations'
         const validData = chartData.map(d => +d.inmigrations).filter(d => !isNaN(d));
 
-        // Establecer las dimensiones y márgenes del gráfico
+        // Establezco las dimensiones y márgenes del gráfico
         const margin = {top: 60, right: 200, bottom: 50, left: 50},
               width = 800 - margin.left - margin.right,
               height = 400 - margin.top - margin.bottom;
 
-        // Crear el SVG
+        // Creamos el SVG
         const svg = container.append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
         
-        // Crear escala X con ticks cada 100,000
+        // Creamos escala X con ticks cada 100,000
         const x = d3.scaleLinear()
             .domain([0, d3.max(validData)]) // Dominio según los datos
             .range([0, width]);
@@ -62,7 +62,7 @@ export function renderHistogram(containerId, colorScheme = "schemeCategory10") {
             .tickFormat(d3.format(","))
             .ticks(6); // Máximo de 6-7 ticks
 
-        // Crear escala Y logarítmica y limitar ticks únicos
+        // Creamos escala Y logarítmica y limitar ticks únicos
         const y = d3.scaleLog()
             .domain([1, d3.max(validData)]) // Dominio logarítmico
             .range([height, 0]);
@@ -72,7 +72,7 @@ export function renderHistogram(containerId, colorScheme = "schemeCategory10") {
             .tickValues([1, 10, 100, 1000, 10000, 100000, 1000000]) // Valores específicos
             .tickFormat(d => `10^${Math.log10(d)}`); // Formato como 10^n
 
-        // Añadir eje X
+        // Añado eje X
         svg.append("g")
             .attr("transform", `translate(0, ${height})`)
             .call(xAxis)
@@ -82,11 +82,11 @@ export function renderHistogram(containerId, colorScheme = "schemeCategory10") {
             .attr("dy", "-0.15em")
             .attr("transform", "rotate(-40)");
 
-        // Añadir eje Y
+        // Añado eje Y
         svg.append("g")
             .call(yAxis);
 
-        // Crear histogram bins
+        // Creamos histogram bins
         const histogram = d3.histogram()
             .domain(x.domain()) // Usamos el dominio de X
             .thresholds(x.ticks(30)); // Dividimos en 30 bins
@@ -96,9 +96,9 @@ export function renderHistogram(containerId, colorScheme = "schemeCategory10") {
         // Selección de colores dinámica según el esquema dado
         const colorScale = d3.scaleOrdinal(d3[colorScheme]);
         
-        // Dibujar las barras, asegurándonos de que las alturas sean válidas
+        // Dibujamos las barras, asegurándonos de que las alturas sean válidas
         svg.selectAll("rect")
-            .data(bins.filter(d => d.length > 0)) // Filtrar bins vacíos
+            .data(bins.filter(d => d.length > 0)) // Filtro bins vacíos
             .enter().append("rect")
             .attr("x", d => x(d.x0))
             .attr("y", d => y(d.length)) // Usar escala logarítmica para la posición Y
@@ -106,7 +106,7 @@ export function renderHistogram(containerId, colorScheme = "schemeCategory10") {
             .attr("height", d => height - y(d.length)) // Altura de la barra
             .attr("fill", colorScale(0));
         
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", (width + margin.left) / 2)
             .attr("y", margin.top / 2)
@@ -125,7 +125,7 @@ export function renderHistogramDinamico(containerId, dataType = "inmigracion", c
     container.html(''); // Limpiar contenedor
 
     getCachedData().then(data => {
-        // Seleccionar los datos adecuados en función del parámetro dataType
+        // Selecciono los datos adecuados en función del parámetro dataType
         let chartData;
         switch (dataType) {
             case 'emigracion':
@@ -151,7 +151,7 @@ export function renderHistogramDinamico(containerId, dataType = "inmigracion", c
             return;
         }
 
-        // Seleccionar la columna de acuerdo al tipo de dato (inmigracion, emigracion, muertes, poblacion)
+        // Selecciono la columna de acuerdo al tipo de dato (inmigracion, emigracion, muertes, poblacion)
         let validData;
         switch (dataType) {
             case 'emigracion':
@@ -171,19 +171,19 @@ export function renderHistogramDinamico(containerId, dataType = "inmigracion", c
                 return;
         }
 
-        // Establecer las dimensiones y márgenes del gráfico
+        // Establezco las dimensiones y márgenes del gráfico
         const margin = {top: 60, right: 200, bottom: 50, left: 50},
               width = 800 - margin.left - margin.right,
               height = 400 - margin.top - margin.bottom;
 
-        // Crear el SVG
+        // Creamos el SVG
         const svg = container.append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
         
-        // Crear escala X con ticks cada 100,000
+        // Creamos escala X con ticks cada 100,000
         const x = d3.scaleLinear()
             .domain([0, d3.max(validData)]) // Dominio según los datos
             .range([0, width]);
@@ -192,7 +192,7 @@ export function renderHistogramDinamico(containerId, dataType = "inmigracion", c
             .tickFormat(d3.format(","))
             .ticks(6); // Máximo de 6-7 ticks
 
-        // Crear escala Y logarítmica y limitar ticks únicos
+        // Creamos escala Y logarítmica y limitar ticks únicos
         const y = d3.scaleLog()
             .domain([1, d3.max(validData)]) // Dominio logarítmico
             .range([height, 0]);
@@ -202,7 +202,7 @@ export function renderHistogramDinamico(containerId, dataType = "inmigracion", c
             .tickValues([1, 10, 100, 1000, 10000, 100000, 1000000]) // Valores específicos
             .tickFormat(d => `10^${Math.log10(d)}`); // Formato como 10^n
 
-        // Añadir eje X
+        // Añado eje X
         svg.append("g")
             .attr("transform", `translate(0, ${height})`)
             .call(xAxis)
@@ -212,11 +212,11 @@ export function renderHistogramDinamico(containerId, dataType = "inmigracion", c
             .attr("dy", "-0.15em")
             .attr("transform", "rotate(-40)");
 
-        // Añadir eje Y
+        // Añado eje Y
         svg.append("g")
             .call(yAxis);
 
-        // Crear histogram bins
+        // Creamos histogram bins
         const histogram = d3.histogram()
             .domain(x.domain()) // Usamos el dominio de X
             .thresholds(x.ticks(30)); // Dividimos en 30 bins
@@ -226,9 +226,9 @@ export function renderHistogramDinamico(containerId, dataType = "inmigracion", c
         // Selección de colores dinámica según el esquema dado
         const colorScale = d3.scaleOrdinal(d3[colorScheme]);
         
-        // Dibujar las barras, asegurándonos de que las alturas sean válidas
+        // Dibujamos las barras, asegurándonos de que las alturas sean válidas
         svg.selectAll("rect")
-            .data(bins.filter(d => d.length > 0)) // Filtrar bins vacíos
+            .data(bins.filter(d => d.length > 0)) // Filtro bins vacíos
             .enter().append("rect")
             .attr("x", d => x(d.x0))
             .attr("y", d => y(d.length)) // Usar escala logarítmica para la posición Y
@@ -236,7 +236,7 @@ export function renderHistogramDinamico(containerId, dataType = "inmigracion", c
             .attr("height", d => height - y(d.length)) // Altura de la barra
             .attr("fill", colorScale(0));
         
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", (width + margin.left) / 2)
             .attr("y", - margin.top / 2)
@@ -263,21 +263,21 @@ export function renderDensityPlotMulti(containerId, colorScheme = "schemeCategor
             return;
         }
 
-        // Filtrar los datos para excluir los registros con 'country_birth_region' igual a "UNKNOWN"
+        // Filtro los datos para excluir los registros con 'country_birth_region' igual a "UNKNOWN"
         const filteredData = chartData.filter(d => d["country_birth_region"] !== "UNKNOWN");
 
-        // Agrupar los datos filtrados por 'country_birth_region'
+        // Agrupo los datos filtrados por 'country_birth_region'
         const dataByRegion = d3.group(filteredData, d => d["country_birth_region"]);
 
-        // Agrupar los datos por 'reporting_country_name'
+        // Agrupo los datos por 'reporting_country_name'
         /*const dataByRegion = d3.group(chartData, d => d["country_birth_region"]);*/
 
-        // Establecer las dimensiones y márgenes del gráfico
+        // Establezco las dimensiones y márgenes del gráfico
         const margin = {top: 60, right: 200, bottom: 50, left: 50},
               width = 800 - margin.left - margin.right,
               height = 400 - margin.top - margin.bottom;
 
-        // Crear el SVG y agregarlo al contenedor
+        // Creamos el SVG y Agregolo al contenedor
         const svg = d3.select(containerId)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -287,17 +287,17 @@ export function renderDensityPlotMulti(containerId, colorScheme = "schemeCategor
         const chartGroup = svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        // Agregar el eje X
+        // Agrego el eje X
         const x = d3.scaleLinear()
-            .domain([-10, 15])  // Definir dominio en función de los datos
+            .domain([-10, 15])  // Definimos dominio en función de los datos
             .range([0, width]);
         chartGroup.append("g")
             .attr("transform", `translate(0, ${height})`)
             .call(d3.axisBottom(x));
 
-        // Agregar el eje Y
+        // Agrego el eje Y
         const y = d3.scaleLinear()
-            .domain([0, 0.12])  // Ajustar dominio del eje Y según el rango de densidad
+            .domain([0, 0.12])  // Ajustamos dominio del eje Y según el rango de densidad
             .range([height, 0]);
         chartGroup.append("g")
             .call(d3.axisLeft(y));
@@ -305,9 +305,9 @@ export function renderDensityPlotMulti(containerId, colorScheme = "schemeCategor
         // Selección de colores dinámica según el esquema dado
         const colorScale = d3.scaleOrdinal(d3[colorScheme]);
 
-        // Iterar sobre cada sub-región y calcular la densidad
+        // Iterar sobre cada sub-región y Calculo la densidad
         Array.from(dataByRegion).forEach(([region, regionData], index) => {
-            // Calcular la estimación de densidad usando el kernel
+            // Calculo la estimación de densidad usando el kernel
             const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(60));
             const density = kde(
                 regionData
@@ -330,11 +330,11 @@ export function renderDensityPlotMulti(containerId, colorScheme = "schemeCategor
                 );
         });
 
-        // Crear grupo de leyenda a la derecha del gráfico
+        // Creamos grupo de leyenda a la derecha del gráfico
         const legendGroup = svg.append("g")
             .attr("transform", `translate(${width + margin.left + 60}, ${margin.top})`);
 
-        // Añadir la leyenda
+        // Añado la leyenda
         Array.from(dataByRegion).forEach(([region], index) => {
             legendGroup.append("circle")
                 .attr("cx", 0)
@@ -350,7 +350,7 @@ export function renderDensityPlotMulti(containerId, colorScheme = "schemeCategor
                 .attr("alignment-baseline", "middle");
         });
 
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", (width + margin.left) / 2)
             .attr("y", margin.top / 2)
@@ -384,12 +384,12 @@ export function renderDensityPlotUni(containerId, colorScheme = "schemeCategory1
             return;
         }
         console.log("Datos inmigration para density plot uni i:",validData )
-        // Establecer las dimensiones y márgenes del gráfico
+        // Establezco las dimensiones y márgenes del gráfico
         const margin = {top: 60, right: 200, bottom: 50, left: 50},
               width = 800 - margin.left - margin.right,
               height = 400 - margin.top - margin.bottom;
 
-        // Crear el SVG y agregarlo al contenedor
+        // Creamos el SVG y Agregolo al contenedor
         const svg = d3.select(containerId)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -399,22 +399,22 @@ export function renderDensityPlotUni(containerId, colorScheme = "schemeCategory1
         const chartGroup = svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        // Agregar el eje X
+        // Agrego el eje X
         const x = d3.scaleLinear()
-            .domain([-100, 150])  // Definir dominio en función de los datos
+            .domain([-100, 150])  // Definimos dominio en función de los datos
             .range([0, width]);
         chartGroup.append("g")
             .attr("transform", `translate(0, ${height})`)
             .call(d3.axisBottom(x));
 
-        // Agregar el eje Y
+        // Agrego el eje Y
         const y = d3.scaleLinear()
-            .domain([0, 0.12])  // Ajustar dominio del eje Y según el rango de densidad
+            .domain([0, 0.12])  // Ajustamos dominio del eje Y según el rango de densidad
             .range([height, 0]);
         chartGroup.append("g")
             .call(d3.axisLeft(y));
 
-        // Calcular la estimación de densidad usando el kernel
+        // Calculo la estimación de densidad usando el kernel
         const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(60));
         const density = kde(validData);
 
@@ -435,7 +435,7 @@ export function renderDensityPlotUni(containerId, colorScheme = "schemeCategory1
                 .y(d => y(d[1]))
             );
 
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", (width + margin.left) / 2)
             .attr("y", margin.top / 2)
@@ -452,7 +452,7 @@ export function renderDensityPlotDinamico(containerId, dataSource = "inmigracion
     container.html(''); // Limpiar contenedor
 
     getCachedData().then(data => {
-        // Seleccionar el conjunto de datos según el parámetro dataSource
+        // Selecciono el conjunto de datos según el parámetro dataSource
         let chartData;
         switch (dataSource) {
             case 'emigracion':
@@ -510,12 +510,12 @@ export function renderDensityPlotDinamico(containerId, dataSource = "inmigracion
             return;
         }
 
-        // Establecer las dimensiones y márgenes del gráfico
+        // Establezco las dimensiones y márgenes del gráfico
         const margin = {top: 40, right: 25, bottom: 20, left: 20},
               width = 600 - margin.left - margin.right,
               height = 400 - margin.top - margin.bottom;
 
-        // Crear el SVG y agregarlo al contenedor
+        // Creamos el SVG y Agregolo al contenedor
         const svg = d3.select(containerId)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -525,7 +525,7 @@ export function renderDensityPlotDinamico(containerId, dataSource = "inmigracion
         const chartGroup = svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        // Ajustar el dominio del eje X con un margen del 10%
+        // Ajustamos el dominio del eje X con un margen del 10%
         const dataExtent = d3.extent(validData);
         const marginFactor = 0.85; // 10% de margen
         const xDomain = [
@@ -533,22 +533,22 @@ export function renderDensityPlotDinamico(containerId, dataSource = "inmigracion
             dataExtent[1] + (dataExtent[1] - dataExtent[0]) * marginFactor
         ];
 
-        // Agregar el eje X
+        // Agrego el eje X
         const x = d3.scaleLinear()
-            .domain(xDomain)  // Definir dominio según los datos
+            .domain(xDomain)  // Definimos dominio según los datos
             .range([0, width]);
         chartGroup.append("g")
             .attr("transform", `translate(0, ${height})`)
             .call(d3.axisBottom(x));
 
-        // Agregar el eje Y
+        // Agrego el eje Y
         const y = d3.scaleLinear()
-            .domain([0, 0.12])  // Ajustar dominio del eje Y según el rango de densidad
+            .domain([0, 0.12])  // Ajustamos dominio del eje Y según el rango de densidad
             .range([height, 0]);
         chartGroup.append("g")
             .call(d3.axisLeft(y));
 
-        // Calcular la estimación de densidad usando el kernel
+        // Calculo la estimación de densidad usando el kernel
         const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(60));
         const density = kde(validData);
 
@@ -569,7 +569,7 @@ export function renderDensityPlotDinamico(containerId, dataSource = "inmigracion
                 .y(d => y(d[1]))
             );
 
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", (width + margin.left) / 2)
             .attr("y", margin.top / 2)
@@ -694,7 +694,7 @@ export function renderRidgeLine_example(containerId) {
     container.html(''); // Limpiar contenedor
   
     getCachedData().then(data => {
-      // Seleccionar el conjunto de datos según el parámetro dataSource
+      // Selecciono el conjunto de datos según el parámetro dataSource
       let chartData;
       switch (dataSource) {
         case 'emigracion':
@@ -736,16 +736,16 @@ export function renderRidgeLine_example(containerId) {
         return;
       }
   
-      // Filtrar los datos para excluir los registros con 'country_birth_region' igual a "UNKNOWN"
+      // Filtro los datos para excluir los registros con 'country_birth_region' igual a "UNKNOWN"
       const filteredData = chartData.filter(d => d["country_birth_region"] !== "UNKNOWN");
   
-      // Agrupar los datos filtrados por 'country_birth_region'
+      // Agrupo los datos filtrados por 'country_birth_region'
       const dataByRegion = d3.group(filteredData, d => d["country_birth_region"]);
       
       // Selección de colores dinámica según el esquema dado
       const colorScale = d3.scaleOrdinal(d3[colorScheme]);
       
-      // Obtener las regiones en un array
+      // Obtengo las regiones en un array
       const regions = Array.from(dataByRegion.keys());
       const n = regions.length;
       console.log("Regiones disponibles:", regions);
@@ -811,7 +811,7 @@ export function renderRidgeLine_example(containerId) {
       // Aquí calculamos el alto de cada banda
       const bandHeight = height / n;
       
-       // Añadir título al gráfico
+       // Añado título al gráfico
        svg.append("text")
        .attr("x", (width  ) / 2)
        .attr("y", - margin.top + 60 ) // para alinear con los otros graficos
@@ -823,7 +823,7 @@ export function renderRidgeLine_example(containerId) {
       // Add areas
       svg.selectAll("areas")
         .data(allDensity)  // Asociamos los datos correctamente usando .data() 
-        .join("g") // Usamos <g> para agrupar cada curva
+        .join("g") // Usamos <g> para Agrupo cada curva
         .attr("class", "curveGroup")
         .attr("transform", function(d){return("translate(0," + (yName(d.key)-height) +")" )})
         .attr("stroke", "#000")
@@ -833,7 +833,7 @@ export function renderRidgeLine_example(containerId) {
           .x(function(d) { return x(d[0]); })
           .y(function(d) { return y(d[1]); }))
         .each(function (d) {
-          // Para cada grupo (<g>) agregar la path
+          // Para cada grupo (<g>) Agrego la path
           d3.select(this).append("path")
             .attr("fill", function () {
               const index = regions.indexOf(d.key);
@@ -858,7 +858,7 @@ export function renderRidgeLineImproved(containerId, dataSource = "inmigracion",
     container.html(''); // Limpiar contenedor
   
     getCachedData().then(data => {
-        // Seleccionar el conjunto de datos según el parámetro dataSource
+        // Selecciono el conjunto de datos según el parámetro dataSource
         let chartData;
         switch (dataSource) {
             case 'emigracion':
@@ -877,16 +877,16 @@ export function renderRidgeLineImproved(containerId, dataSource = "inmigracion",
             return;
         }
 
-        // Filtrar los datos para excluir los registros con valores "UNKNOWN" en la columna de agrupación
+        // Filtro los datos para excluir los registros con valores "UNKNOWN" en la columna de agrupación
         const filteredData = chartData.filter(d => d[groupByColumn] !== "UNKNOWN");
 
-        // Agrupar los datos según la columna dinámica
+        // Agrupo los datos según la columna dinámica
         const dataByGroup = d3.group(filteredData, d => d[groupByColumn]);
 
         // Selección de colores dinámica según el esquema dado
         const colorScale = d3.scaleOrdinal(d3[colorScheme]);
 
-        // Obtener los grupos únicos
+        // Obtengo los grupos únicos
         const groups = Array.from(dataByGroup.keys());
         const n = groups.length;
 
@@ -897,7 +897,7 @@ export function renderRidgeLineImproved(containerId, dataSource = "inmigracion",
         const width = 600 - margin.left - margin.right;
         const height = 500 - margin.top - margin.bottom;
 
-        // Crear SVG
+        // Creamos SVG
         const svg = d3.select(containerId)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -931,7 +931,7 @@ export function renderRidgeLineImproved(containerId, dataSource = "inmigracion",
             .call(d3.axisLeft(yName).tickSize(0))
             .select(".domain").remove();
 
-        // Calcular la estimación de densidad para cada grupo
+        // Calculo la estimación de densidad para cada grupo
         const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(40));
         const allDensity = groups.map(group => ({
             key: group,
@@ -939,7 +939,7 @@ export function renderRidgeLineImproved(containerId, dataSource = "inmigracion",
                 .map(d => d[dataSource === "inmigracion" ? "inmigrations_log" : "emigrations_log"]))
         }));
 
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", width / 2)
             .attr("y", -margin.top + 60)
@@ -948,7 +948,7 @@ export function renderRidgeLineImproved(containerId, dataSource = "inmigracion",
             .style("font-weight", "bold")
             .text(`Distribución de ${dataSource.charAt(0).toUpperCase() + dataSource.slice(1)} en Europa por ${groupByColumn}`);
 
-        // Añadir las curvas de densidad
+        // Añado las curvas de densidad
         svg.selectAll("areas")
             .data(allDensity)
             .join("path")
@@ -974,7 +974,7 @@ export function renderBoxplotMultiDinamico(containerId, dataSource = "inmigracio
     container.html(''); // Limpiar contenedor
   
     getCachedData().then(data => {
-      // Seleccionar el conjunto de datos según el parámetro dataSource
+      // Selecciono el conjunto de datos según el parámetro dataSource
       let chartData;
       switch (dataSource) {
         case 'emigracion':
@@ -993,21 +993,21 @@ export function renderBoxplotMultiDinamico(containerId, dataSource = "inmigracio
         return;
       }
   
-      // Filtrar los datos para excluir los registros con 'country_birth_region' igual a "UNKNOWN"
+      // Filtro los datos para excluir los registros con 'country_birth_region' igual a "UNKNOWN"
       const filteredData = chartData.filter(d => d["country_birth_region"] !== "UNKNOWN");
   
-      // Agrupar los datos filtrados por 'country_birth_region'
+      // Agrupo los datos filtrados por 'country_birth_region'
       const dataByRegion = d3.group(filteredData, d => d["country_birth_region"]);
       
       // Selección de colores dinámica según el esquema dado
       const colorScale = d3.scaleOrdinal(d3[colorScheme]);
       
-      // Obtener las regiones en un array
+      // Obtengo las regiones en un array
       const regions = Array.from(dataByRegion.keys());
       const n = regions.length;
       console.log("Regiones disponibles:", regions);
   
-      // Establecer las dimensiones y márgenes del gráfico
+      // Establezco las dimensiones y márgenes del gráfico
       const margin = {top: 60, right: 200, bottom: 50, left: 50},
       width = 900 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
@@ -1041,7 +1041,7 @@ export function renderBoxplotMultiDinamico(containerId, dataSource = "inmigracio
       svg.append("g")
         .call(d3.axisLeft(y));
   
-      // Añadir título fuera del gráfico, por encima
+      // Añado título fuera del gráfico, por encima
       svg.append("text")
         .attr("x", (width + margin.left ) / 2) // Centrado en el ancho total del gráfico
         .attr("y", -margin.top / 2) // Posición por encima del gráfico
@@ -1050,7 +1050,7 @@ export function renderBoxplotMultiDinamico(containerId, dataSource = "inmigracio
         .style("font-weight", "bold")
         .text(`Distribución de ${dataSource.charAt(0).toUpperCase() + dataSource.slice(1)} en Europa por region de nacimiento`);
   
-      // Crear el boxplot para cada región
+      // Creamos el boxplot para cada región
       svg.selectAll(".boxplot")
         .data(regions)
         .join("g")
@@ -1059,7 +1059,7 @@ export function renderBoxplotMultiDinamico(containerId, dataSource = "inmigracio
         .each(function(region) {
           const dataRegion = dataByRegion.get(region).map(d => d[dataSource === "inmigracion" ? "inmigrations_log" : "emigrations_log"]);
   
-          // Calcular los percentiles para cada región
+          // Calculo los percentiles para cada región
           const q1 = d3.quantile(dataRegion.sort(d3.ascending), 0.25);
           const median = d3.quantile(dataRegion.sort(d3.ascending), 0.5);
           const q3 = d3.quantile(dataRegion.sort(d3.ascending), 0.75);
@@ -1067,7 +1067,7 @@ export function renderBoxplotMultiDinamico(containerId, dataSource = "inmigracio
           const min = Math.max(d3.min(dataRegion) - 1, q1 - 1.5 * interQuartileRange);
           const max = Math.min(d3.max(dataRegion) + 1, q3 + 1.5 * interQuartileRange);
   
-          // Crear las líneas de cada boxplot
+          // Creamos las líneas de cada boxplot
           d3.select(this)
             .append("line")
             .attr("x1", 0)
@@ -1077,7 +1077,7 @@ export function renderBoxplotMultiDinamico(containerId, dataSource = "inmigracio
             .attr("stroke", colorScale(regions.indexOf(region)))
             .attr("stroke-width", 1);
   
-          // Crear el rectángulo (la caja) de cada boxplot
+          // Creamos el rectángulo (la caja) de cada boxplot
           d3.select(this)
             .append("rect")
             .attr("x", -10)
@@ -1087,7 +1087,7 @@ export function renderBoxplotMultiDinamico(containerId, dataSource = "inmigracio
             .attr("fill", colorScale(regions.indexOf(region)))
             .attr("opacity", 0.7);
   
-          // Crear la línea de la mediana
+          // Creamos la línea de la mediana
           d3.select(this)
             .append("line")
             .attr("x1", -10)
@@ -1150,7 +1150,7 @@ export function renderViolinPlotMultiDinamico(containerId, dataSource = "inmigra
     container.html(''); // Limpiar contenedor
 
     getCachedData().then(data => {
-        // Seleccionar el conjunto de datos según el parámetro dataSource
+        // Selecciono el conjunto de datos según el parámetro dataSource
         let chartData;
         switch (dataSource) {
             case 'emigracion':
@@ -1169,28 +1169,28 @@ export function renderViolinPlotMultiDinamico(containerId, dataSource = "inmigra
             return;
         }
 
-        // Filtrar los datos para excluir los registros con 'country_birth_region' igual a "UNKNOWN"
+        // Filtro los datos para excluir los registros con 'country_birth_region' igual a "UNKNOWN"
         const filteredData = chartData.filter(d => d["reporting_country_sub-region"] !== "UNKNOWN");
 
-        // Agrupar los datos filtrados por 'reporting_country_sub-region'
+        // Agrupo los datos filtrados por 'reporting_country_sub-region'
         const dataByRegion = d3.group(filteredData, d => d["reporting_country_sub-region"]);
 
         // Selección de colores dinámica según el esquema dado
         const colorScale = d3.scaleOrdinal(d3[colorScheme]);
 
-        // Obtener las regiones en un array
+        // Obtengo las regiones en un array
         const regions = Array.from(dataByRegion.keys());
         const n = regions.length;
         console.log("Regiones disponibles:", regions);
 
         // Dimensiones y márgenes del gráfico
-        // Establecer las dimensiones y márgenes del gráfico
+        // Establezco las dimensiones y márgenes del gráfico
         const margin = {top: 60, right: 200, bottom: 50, left: 50},
               width = 800 - margin.left - margin.right,
               height = 400 - margin.top - margin.bottom;
 
 
-        // Crear SVG
+        // Creamos SVG
         const svg = d3.select(containerId)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -1204,7 +1204,7 @@ export function renderViolinPlotMultiDinamico(containerId, dataSource = "inmigra
 
         // Asegurarnos de que el rango Y esté suficientemente amplio, ajustando márgenes y valores extremos.
         const y = d3.scaleLinear()
-            .domain([0, yMax + 1])  // Añadir margen alrededor de los valores para evitar "compresión"
+            .domain([0, yMax + 1])  // Añado margen alrededor de los valores para evitar "compresión"
             .range([height, 0]);
         svg.append("g").call(d3.axisLeft(y));
 
@@ -1217,20 +1217,20 @@ export function renderViolinPlotMultiDinamico(containerId, dataSource = "inmigra
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(x));
 
-        // Definir el histograma
+        // Definimos el histograma
         const histogram = d3.histogram()
             .domain(y.domain())
-            .thresholds(y.ticks(20))  // Puedes ajustar esto si los bins son demasiados
+            .thresholds(y.ticks(20))  // Puedes Ajustamos esto si los bins son demasiados
             .value(d => d);
 
-        // Agrupar los datos por región y calcular los bins usando d3.groups
+        // Agrupo los datos por región y Calculo los bins usando d3.groups
         const sumstat = d3.groups(filteredData, d => d["reporting_country_sub-region"])
             .map(([key, values]) => {
-                const bins = histogram(values.map(d => d.inmigrations_log));  // Calcular los bins para 'inmigrations_log'
+                const bins = histogram(values.map(d => d.inmigrations_log));  // Calculo los bins para 'inmigrations_log'
                 return { key, value: bins };
             });
 
-        // Encontrar el valor máximo para ajustar el ancho de los violines
+        // Encontrar el valor máximo para Ajustamos el ancho de los violines
         const maxNum = d3.max(sumstat, d => d3.max(d.value, bin => bin.length));
 
         // Escala para el ancho de los violines
@@ -1238,7 +1238,7 @@ export function renderViolinPlotMultiDinamico(containerId, dataSource = "inmigra
             .range([0, x.bandwidth()])
             .domain([-maxNum, maxNum]);
         
-        // Añadir título al gráfico
+        // Añado título al gráfico
        svg.append("text")
        .attr("x", (width + margin.left ) / 2)
        .attr("y", - margin.top / 2 ) // para alinear con los otros graficos
@@ -1247,7 +1247,7 @@ export function renderViolinPlotMultiDinamico(containerId, dataSource = "inmigra
        .style("font-weight", "bold")
        .text(`Distribución de ${dataSource.charAt(0).toUpperCase() + dataSource.slice(1)} en zonas de Europa`);
 
-        // Agregar los violines al gráfico con colores dinámicos
+        // Agrego los violines al gráfico con colores dinámicos
         svg.selectAll("myViolin")
             .data(sumstat)
             .enter()
@@ -1258,8 +1258,8 @@ export function renderViolinPlotMultiDinamico(containerId, dataSource = "inmigra
             .style("stroke", "none")
             .style("fill", colorScale)  // Asignar color dinámico por región
             .attr("d", d3.area()
-                .x0(d => xNum(-d.length))  // Crear la parte izquierda del violín
-                .x1(d => xNum(d.length))   // Crear la parte derecha del violín
+                .x0(d => xNum(-d.length))  // Creamos la parte izquierda del violín
+                .x1(d => xNum(d.length))   // Creamos la parte derecha del violín
                 .y(d => y(d.x0))  // Colocar cada bin en la escala Y
                 .curve(d3.curveCatmullRom)  // Suavizar las curvas para el estilo violín
             );
@@ -1277,7 +1277,7 @@ export function renderViolinPlotEjemplo(containerId) {
         const width = 460 - margin.left - margin.right;
         const height = 400 - margin.top - margin.bottom;
     
-        // Crear SVG
+        // Creamos SVG
         const svg = d3.select(containerId)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -1285,12 +1285,12 @@ export function renderViolinPlotEjemplo(containerId) {
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
     
-        // Cargar los datos y crear el gráfico
+        // Cargar los datos y Creamos el gráfico
         d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv").then(data => {
     
             // Escala Y
             const y = d3.scaleLinear()
-                .domain([3.5, 8]) // Ajustar según sea necesario
+                .domain([3.5, 8]) // Ajustamos según sea necesario
                 .range([height, 0]);
             svg.append("g").call(d3.axisLeft(y));
     
@@ -1303,20 +1303,20 @@ export function renderViolinPlotEjemplo(containerId) {
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(x));
     
-            // Definir el histograma
+            // Definimos el histograma
             const histogram = d3.histogram()
                 .domain(y.domain())
                 .thresholds(y.ticks(20))
                 .value(d => d);
     
-            // Agrupar los datos por especie y calcular los bins usando d3.groups
+            // Agrupo los datos por especie y Calculo los bins usando d3.groups
             const sumstat = d3.groups(data, d => d.Species)
                 .map(([key, values]) => {
                     const bins = histogram(values.map(d => d.Sepal_Length));
                     return { key, value: bins };
                 });
     
-            // Encontrar el valor máximo para ajustar el ancho de los violines
+            // Encontrar el valor máximo para Ajustamos el ancho de los violines
             const maxNum = d3.max(sumstat, d => d3.max(d.value, bin => bin.length));
     
             // Escala para el ancho de los violines
@@ -1324,7 +1324,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .range([0, x.bandwidth()])
                 .domain([-maxNum, maxNum]);
     
-            // Agregar los violines al gráfico
+            // Agrego los violines al gráfico
             svg.selectAll("myViolin")
                 .data(sumstat)
                 .enter()
@@ -1346,7 +1346,7 @@ export function renderViolinPlotEjemplo(containerId) {
 
     export function renderBarplotDinamicoHorizontal(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "country_birth_sub-region", colorScheme = "schemeCategory10") {
         const container = d3.select(containerId);
-        container.html(''); // limpiamos contenedor antes de agregar el gráfico
+        container.html(''); // limpiamos contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
             // seleccion0 el conjunto de datos según el parámetro dataSource
@@ -1383,7 +1383,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 width = 1000 - margin.left - margin.right,
                 height = 600 - margin.top - margin.bottom;
     
-            // Crear SVG
+            // Creamos SVG
             const svg = container
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -1428,7 +1428,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .attr("height", y.bandwidth())
                 .attr("fill", d => colorScale(d[yColumn]));
     
-            // Añadir título al gráfico
+            // Añado título al gráfico
             svg.append("text")
                 .attr("x", width / 2)
                 .attr("y", -10)
@@ -1442,10 +1442,10 @@ export function renderViolinPlotEjemplo(containerId) {
     
     export function renderWordCloudDinamica(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "country_birth_sub-region", colorScheme = "schemeCategory10") {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
-            // Seleccionar el conjunto de datos según el parámetro dataSource
+            // Selecciono el conjunto de datos según el parámetro dataSource
             let chartData;
             switch (dataSource) {
                 case 'emigracion':
@@ -1464,10 +1464,10 @@ export function renderViolinPlotEjemplo(containerId) {
                 return;
             }
     
-            // Preprocesar los datos para obtener la suma de inmigraciones por país
+            // Preprocesar los datos para Obtengo la suma de inmigraciones por país
             const wordCloudData = preprocessDataForWordCloud(chartData, xColumn, yColumn);
     
-            // Crear la nube de palabras
+            // Creamos la nube de palabras
             const fill = d3.scaleOrdinal(d3[colorScheme]);
     
             const svg = container.append("svg")
@@ -1480,7 +1480,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .padding(5)
                 .rotate(function() { return ~~(Math.random() * 2) * 90; })
                 .font("Impact")
-                .fontSize(d => Math.sqrt(d.size) * 10) // Ajustar tamaño de las palabras según el número total de inmigraciones
+                .fontSize(d => Math.sqrt(d.size) * 10) // Ajustamos tamaño de las palabras según el número total de inmigraciones
                 .on("end", draw);
     
             layout.start();
@@ -1506,11 +1506,11 @@ export function renderViolinPlotEjemplo(containerId) {
     function preprocessDataForWordCloud(data, xColumn = "inmigrations", yColumn = "country_birth_sub-region") {
         const countryTotals = {};
     
-        // Agrupar los datos por país y sumar las inmigraciones
+        // Agrupo los datos por país y sumar las inmigraciones
         data.forEach(d => {
             const country = d[yColumn]; // País
             const inmigraciones = +d[xColumn]; // Inmigraciones
-            if (country !== "UNKNOWN" && country !== "Other") { // Filtrar "UNKNOWN" y "Other"
+            if (country !== "UNKNOWN" && country !== "Other") { // Filtro "UNKNOWN" y "Other"
                 countryTotals[country] = (countryTotals[country] || 0) + inmigraciones;
             }
         });
@@ -1526,10 +1526,10 @@ export function renderViolinPlotEjemplo(containerId) {
     
     export function renderLollipopPlotDinamico_horizontal(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "country_birth_sub-region", colorScheme = "schemeCategory10") {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
-            // Seleccionar el conjunto de datos según el parámetro dataSource
+            // Selecciono el conjunto de datos según el parámetro dataSource
             let chartData;
             switch (dataSource) {
                 case 'emigracion':
@@ -1548,8 +1548,8 @@ export function renderViolinPlotEjemplo(containerId) {
                 return;
             }
     
-            // 1. Agrupar por región o país y sumar las inmigraciones utilizando d3.group()
-            const groupedData = d3.group(chartData, d => d[yColumn]); // Agrupar por la columna de país o subregión
+            // 1. Agrupo por región o país y sumar las inmigraciones utilizando d3.group()
+            const groupedData = d3.group(chartData, d => d[yColumn]); // Agrupo por la columna de país o subregión
             const summedData = Array.from(groupedData, ([key, values]) => ({
                 key: key,
                 value: d3.sum(values, d => +d[xColumn]) // Sumar las inmigraciones por cada grupo
@@ -1563,7 +1563,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 width = 800 - margin.left - margin.right,
                 height = 600 - margin.top - margin.bottom;
     
-            // Crear SVG
+            // Creamos SVG
             const svg = container.append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -1581,19 +1581,19 @@ export function renderViolinPlotEjemplo(containerId) {
                 .domain(summedData.map(d => d.key)) // Nombres dinámicos en base a la columna yColumn
                 .padding(0.5);
     
-            // Añadir el eje X (valores)
+            // Añado el eje X (valores)
             svg.append("g")
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(x).ticks(10));
     
-            // Añadir el eje Y (regiones o países)
+            // Añado el eje Y (regiones o países)
             svg.append("g")
                 .call(d3.axisLeft(y).tickSize(0));
     
             // 6. Escala de colores dinámica
             const colorScale = d3.scaleOrdinal(d3[colorScheme]).domain(summedData.map(d => d.key));
     
-            // 7. Añadir las líneas (solo hasta el círculo)
+            // 7. Añado las líneas (solo hasta el círculo)
             svg.selectAll("myLine")
                 .data(summedData)
                 .enter()
@@ -1605,7 +1605,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .attr("stroke", "grey")
                 .attr("stroke-width", 1);
     
-            // 8. Añadir los círculos en la punta de las líneas
+            // 8. Añado los círculos en la punta de las líneas
             svg.selectAll("myCircle")
                 .data(summedData)
                 .enter()
@@ -1616,7 +1616,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .style("fill", d => colorScale(d.key))
                 .attr("stroke", "black");
     
-            // 9. Añadir título al gráfico
+            // 9. Añado título al gráfico
             svg.append("text")
                 .attr("x", width / 2)
                 .attr("y", -10)
@@ -1629,10 +1629,10 @@ export function renderViolinPlotEjemplo(containerId) {
     
     export function renderLollipopPlotDinamico(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "country_birth_sub-region", colorScheme = "schemeCategory10") {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
-            // Seleccionar el conjunto de datos según el parámetro dataSource
+            // Selecciono el conjunto de datos según el parámetro dataSource
             let chartData;
             switch (dataSource) {
                 case 'emigracion':
@@ -1654,8 +1654,8 @@ export function renderViolinPlotEjemplo(containerId) {
             // filtramos UNKNOWN y Other
             const filteredData = chartData.filter(d => d[yColumn] !== "UNKNOWN" && d[yColumn] !== "Other");
 
-            // 1. Agrupar por región o país y sumar las inmigraciones utilizando d3.group()
-            const groupedData = d3.group(filteredData, d => d[yColumn]); // Agrupar por la columna de país o subregión
+            // 1. Agrupo por región o país y sumar las inmigraciones utilizando d3.group()
+            const groupedData = d3.group(filteredData, d => d[yColumn]); // Agrupo por la columna de país o subregión
             const summedData = Array.from(groupedData, ([key, values]) => ({
                 key: key,
                 value: d3.sum(values, d => +d[xColumn]) // Sumar las inmigraciones por cada grupo
@@ -1669,7 +1669,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 width = 1100 - margin.left - margin.right,
                 height = 600 - margin.top - margin.bottom;
     
-            // Crear SVG
+            // Creamos SVG
             const svg = container.append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -1683,7 +1683,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .domain(summedData.map(d => d.key)) // Nombres dinámicos en base a la columna yColumn
                 .padding(2);
     
-            // Añadir el eje X (valores)
+            // Añado el eje X (valores)
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(x))
@@ -1697,14 +1697,14 @@ export function renderViolinPlotEjemplo(containerId) {
                 .domain([0, d3.max(summedData, d => d.value) || 1]) // Máximo dinámico en base a los datos
                 .range([height, 0]);
     
-            // Añadir el eje Y (regiones o países)
+            // Añado el eje Y (regiones o países)
             svg.append("g")
                 .call(d3.axisLeft(y).tickSize(0));
     
             // 6. Escala de colores dinámica
             const colorScale = d3.scaleOrdinal(d3[colorScheme]).domain(summedData.map(d => d.key));
     
-            // 7. Añadir las líneas (solo hasta el círculo)
+            // 7. Añado las líneas (solo hasta el círculo)
             svg.selectAll("myLine")
                 .data(summedData)
                 .enter()
@@ -1716,7 +1716,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .attr("stroke", "grey")
                 .attr("stroke-width", 1);
     
-            // 8. Añadir los círculos en la punta de las líneas
+            // 8. Añado los círculos en la punta de las líneas
             svg.selectAll("myCircle")
                 .data(summedData)
                 .enter()
@@ -1727,7 +1727,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .style("fill", d => colorScale(d.key))
                 .attr("stroke", "black");
     
-            // 9. Añadir título al gráfico
+            // 9. Añado título al gráfico
             svg.append("text")
                 .attr("x", width / 2)
                 .attr("y", -10)
@@ -1746,10 +1746,10 @@ export function renderViolinPlotEjemplo(containerId) {
         colorScheme = "schemeCategory10"
     ) {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
-            // Seleccionar el conjunto de datos según el parámetro dataSource
+            // Selecciono el conjunto de datos según el parámetro dataSource
             let chartData;
             switch (dataSource) {
                 case 'emigracion':
@@ -1768,21 +1768,21 @@ export function renderViolinPlotEjemplo(containerId) {
                 return;
             }
     
-            // Filtrar los datos con la misma lógica que en la dona
+            // Filtro los datos con la misma lógica que en la dona
             const filteredData = chartData.filter(d =>
                 d[groupColumn] !== "UNKNOWN" && d[groupColumn] !== "Other" && d[groupColumn] !== "Todas" &&
                 d["country_birth"] !== "US" && d["country_birth"] !== "IN" &&
                 d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU" && d["country_birth_name"] !== "Europe"
             );
     
-            // Agrupar y sumar los datos utilizando d3.rollup
+            // Agrupo y sumar los datos utilizando d3.rollup
             const groupedData = d3.rollup(
                 filteredData,
                 v => d3.sum(v, d => +d[yColumn]), // Sumar los valores de yColumn (inmigrations)
-                d => d[groupColumn] // Agrupar por groupColumn (country_birth_name)
+                d => d[groupColumn] // Agrupo por groupColumn (country_birth_name)
             );
     
-            // Convertir a lista, ordenar por valor y seleccionar los Top 20
+            // Convertir a lista, ordenar por valor y Selecciono los Top 20
             const top20Data = Array.from(groupedData, ([key, value]) => ({ key, value }))
                 .sort((a, b) => b.value - a.value)
                 .slice(0, 20);
@@ -1792,7 +1792,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 width = 1100 - margin.left - margin.right,
                 height = 600 - margin.top - margin.bottom;
     
-            // Crear SVG
+            // Creamos SVG
             const svg = container.append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -1805,7 +1805,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .domain(top20Data.map(d => d.key)) // Nombres dinámicos en base a la columna groupColumn
                 .padding(2);
     
-            // Añadir el eje X
+            // Añado el eje X
             svg.append("g")
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(x))
@@ -1819,14 +1819,14 @@ export function renderViolinPlotEjemplo(containerId) {
                 .domain([0, d3.max(top20Data, d => d.value) || 1]) // Máximo dinámico en base a los datos
                 .range([height, 0]);
     
-            // Añadir el eje Y
+            // Añado el eje Y
             svg.append("g")
                 .call(d3.axisLeft(y).tickSize(0));
     
             // Escala de colores dinámica
             const colorScale = d3.scaleOrdinal(d3[colorScheme]).domain(top20Data.map(d => d.key));
     
-            // Añadir las líneas (solo hasta el círculo)
+            // Añado las líneas (solo hasta el círculo)
             svg.selectAll("myLine")
                 .data(top20Data)
                 .enter()
@@ -1838,7 +1838,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .attr("stroke", "grey")
                 .attr("stroke-width", 1);
     
-            // Añadir los círculos en la punta de las líneas
+            // Añado los círculos en la punta de las líneas
             svg.selectAll("myCircle")
                 .data(top20Data)
                 .enter()
@@ -1849,7 +1849,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .style("fill", d => colorScale(d.key))
                 .attr("stroke", "black");
     
-            // Añadir título al gráfico
+            // Añado título al gráfico
             svg.append("text")
                 .attr("x", width / 2)
                 .attr("y", -10)
@@ -1863,7 +1863,7 @@ export function renderViolinPlotEjemplo(containerId) {
 
     export function render2dDensityPlotDinamico(containerId, xColumn = "jan", yColumn = "death", colorScheme = "schemeCategory10") {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
             // Usar datos solo totales de inmigración
@@ -1881,7 +1881,7 @@ export function renderViolinPlotEjemplo(containerId) {
                   width = 800 - margin.left - margin.right,
                   height = 600 - margin.top - margin.bottom;
     
-            // Crear SVG
+            // Creamos SVG
             const svg = container.append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
@@ -1911,7 +1911,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .domain([0, 1]) // Densidad relativa
                 .range(colorScheme);
     
-            // Calcular datos de densidad
+            // Calculo datos de densidad
             const densityData = d3.contourDensity()
                 .x(d => x(+d[xColumn]))
                 .y(d => y(+d[yColumn]))
@@ -1919,7 +1919,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .bandwidth(20) // Ajusta el ancho de banda para suavizar la densidad
                 (chartData);
     
-            // Dibujar las formas de densidad
+            // Dibujamos las formas de densidad
             svg.insert("g", "g")
                 .selectAll("path")
                 .data(densityData)
@@ -1927,7 +1927,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .attr("d", d3.geoPath())
                 .attr("fill", d => color);
     
-            // Añadir título
+            // Añado título
             svg.append("text")
                 .attr("x", width / 2)
                 .attr("y", -10)
@@ -1940,7 +1940,7 @@ export function renderViolinPlotEjemplo(containerId) {
     
     export function renderBubblePlot(containerId, poblacionColumn = "jan", muertesColumn = "death", inmigrationsColumn = "inmigrations", subregionColumn = "reporting_country_sub-region", colorScheme = "schemeCategory10") {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar el contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar el contenedor antes de Agrego el gráfico
         
         getCachedData().then(data => {
             // Seleccionamos los datos (se usará el dataset de inmigraciones y muertes)
@@ -1969,7 +1969,7 @@ export function renderViolinPlotEjemplo(containerId) {
                   width = 1000 - margin.left - margin.right,
                   height = 600 - margin.top - margin.bottom;
     
-            // Crear SVG
+            // Creamos SVG
             const svg = container.append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
@@ -2005,7 +2005,7 @@ export function renderViolinPlotEjemplo(containerId) {
             const myColor = d3.scaleOrdinal(d3[colorScheme]) // Usar el esquema de colores proporcionado
                 .domain(filteredData.map(d => d[subregionColumn])); // Usamos subregión como criterio para color
     
-            // Añadir burbujas
+            // Añado burbujas
             chartGroup.append('g')
                 .selectAll("dot")
                 .data(filteredData)
@@ -2018,7 +2018,7 @@ export function renderViolinPlotEjemplo(containerId) {
                     .attr("stroke", "white")
                     .style("stroke-width", "2px");
     
-            // Añadir título al gráfico
+            // Añado título al gráfico
             svg.append("text")
                 .attr("x", (width + margin.left + margin.right) / 2)
                 .attr("y", margin.top / 2)
@@ -2042,11 +2042,11 @@ export function renderViolinPlotEjemplo(containerId) {
                 .attr("text-anchor", "middle")
                 .text("Muertes");
 
-        // Añadir leyenda de colores
+        // Añado leyenda de colores
         const size = 20;
         const allGroups = Array.from(new Set(filteredData.map(d => d[subregionColumn]))); // Subregiones únicas
 
-        // Añadir rectángulos para leyenda (fuera del gráfico)
+        // Añado rectángulos para leyenda (fuera del gráfico)
         svg.selectAll("myrect")
             .data(allGroups)
             .enter()
@@ -2059,7 +2059,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .attr("stroke", "white")
                 .style("stroke-width", "2px");
 
-        // Añadir etiquetas de texto a la leyenda
+        // Añado etiquetas de texto a la leyenda
         svg.selectAll("mylabels")
             .data(allGroups)
             .enter()
@@ -2077,10 +2077,10 @@ export function renderViolinPlotEjemplo(containerId) {
         
     export function renderHeatmap(containerId, xColumn = "year", yColumn = "age", dataSource = "inmigracion", colorScheme = "interpolateViridis") {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar el contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar el contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
-            // Seleccionar el conjunto de datos según el parámetro dataSource
+            // Selecciono el conjunto de datos según el parámetro dataSource
             let chartData;
             switch (dataSource) {
                 case 'emigracion':
@@ -2182,7 +2182,7 @@ export function renderViolinPlotEjemplo(containerId) {
                 .style("stroke", "none")
                 .style("opacity", 0.8);
     
-            // Crear la leyenda
+            // Creamos la leyenda
             const legendHeight = 200;
             const legendWidth = 20;
     
@@ -2238,11 +2238,11 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
                   width = 1000 - margin.left - margin.right,
                   height = 600 - margin.top - margin.bottom;
         
-        // Seleccionar el contenedor y limpiarlo
+        // Selecciono el contenedor y limpiarlo
         const container = d3.select(containerId);
         container.html('');
         
-        // Crear SVG
+        // Creamos SVG
         const svg = container.append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -2285,7 +2285,7 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
             
             console.log("dadtos scatterplot:" , dataReady);
              
-           // Filtrar datos únicos para evitar duplicados
+           // Filtro datos únicos para evitar duplicados
             const uniqueDataReady = Array.from(
                 new Map(dataReady.map(d => [`${d.year}-${d.age}`, d])).values()
             ); 
@@ -2317,7 +2317,7 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
                 .x(d => x(d.year))
                 .y(d => y(d.value));
     
-            // Dibujar líneas
+            // Dibujamos líneas
             svg.selectAll(".line")
             .data(d3.group(uniqueDataReady, d => d.age))
             .enter()
@@ -2328,7 +2328,7 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
             .style("stroke-width", 4)
             .style("fill", "none");
 
-            // Dibujar puntos
+            // Dibujamos puntos
             svg.selectAll(".points")
             .data(uniqueDataReady)
             .enter()
@@ -2354,7 +2354,7 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
                 .style("fill", d => color(d.name))
                 .style("font-size", 15);
             
-            // Añadir título al gráfico
+            // Añado título al gráfico
             svg.append("text")
                 .attr("x", (width + margin.left ) / 2)
                 .attr("y", margin.top / 10)
@@ -2375,11 +2375,11 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
           width = 460 - margin.left - margin.right,
           height = 400 - margin.top - margin.bottom;
 
-    // Seleccionar el contenedor y limpiar su contenido
+    // Selecciono el contenedor y limpiar su contenido
     const container = d3.select(containerId);
     container.html('');
 
-    // Crear el elemento SVG
+    // Creamos el elemento SVG
     const svg = container.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -2393,7 +2393,7 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
         // Lista de grupos (una por columna en el dataset)
         const allGroup = ["valueA", "valueB", "valueC"];
 
-        // Reformatear los datos para obtener un array de arrays de tuplas {x, y}
+        // Reformatear los datos para Obtengo un array de arrays de tuplas {x, y}
         const dataReady = allGroup.map(grpName => ({
             name: grpName,
             values: data.map(d => ({ time: +d.time, value: +d[grpName] }))
@@ -2404,7 +2404,7 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
             .domain(allGroup)
             .range(d3.schemeSet2);
 
-        // Agregar el eje X
+        // Agrego el eje X
         const x = d3.scaleLinear()
             .domain([0, 10])
             .range([0, width]);
@@ -2412,19 +2412,19 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(x));
 
-        // Agregar el eje Y
+        // Agrego el eje Y
         const y = d3.scaleLinear()
             .domain([0, 20])
             .range([height, 0]);
         svg.append("g")
             .call(d3.axisLeft(y));
 
-        // Definir la línea
+        // Definimos la línea
         const line = d3.line()
             .x(d => x(d.time))
             .y(d => y(d.value));
 
-        // Agregar las líneas
+        // Agrego las líneas
         svg.selectAll("myLines")
             .data(dataReady)
             .enter()
@@ -2434,7 +2434,7 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
             .style("stroke-width", 4)
             .style("fill", "none");
 
-        // Agregar los puntos
+        // Agrego los puntos
         svg.selectAll("myDots")
             .data(dataReady)
             .enter()
@@ -2449,7 +2449,7 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
             .attr("r", 5)
             .attr("stroke", "white");
 
-        // Agregar las etiquetas al final de cada línea
+        // Agrego las etiquetas al final de cada línea
         svg.selectAll("myLabels")
             .data(dataReady)
             .enter()
@@ -2468,10 +2468,10 @@ export async function renderConnectedScatterPlot(containerId, xColumn = "year", 
 
 export function renderSmallMultipleLineplot(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "country_birth_name", colorScheme = "schemeCategory10") {
     const container = d3.select(containerId);
-    container.html(''); // Limpiar contenedor antes de agregar el gráfico
+    container.html(''); // Limpiar contenedor antes de Agrego el gráfico
 
     getCachedData().then(data => {
-        // Seleccionar el conjunto de datos según el parámetro dataSource
+        // Selecciono el conjunto de datos según el parámetro dataSource
         let chartData;
         switch (dataSource) {
             case 'emigracion':
@@ -2490,15 +2490,15 @@ export function renderSmallMultipleLineplot(containerId, dataSource = "inmigraci
             return;
         }
 
-        // Filtrar "UNKNOWN" y "Other"
+        // Filtro "UNKNOWN" y "Other"
         const filteredData = chartData.filter(d => d[yColumn] !== "UNKNOWN" && d[yColumn] !== "Other" 
                 && d["country_birth"] !== "US" && d["country_birth"] !== "IN" && d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU");
 
-        // Filtramos los datos para obtener solo las inmigraciones en 2022
+        // Filtramos los datos para Obtengo solo las inmigraciones en 2022
         const filtered2022 = filteredData.filter(d => d.year === 2022);
 
-        // Agrupar por país y sumar las inmigraciones para 2022
-        const grouped2022 = d3.group(filtered2022, d => d[yColumn]); // Agrupar por país
+        // Agrupo por país y sumar las inmigraciones para 2022
+        const grouped2022 = d3.group(filtered2022, d => d[yColumn]); // Agrupo por país
 
         console.log("Datos agrupados 2022:", grouped2022);
         const summed2022 = Array.from(grouped2022, ([key, values]) => ({
@@ -2509,14 +2509,14 @@ export function renderSmallMultipleLineplot(containerId, dataSource = "inmigraci
         // Ordenar por inmigraciones de mayor a menor
         summed2022.sort((a, b) => b.value - a.value);
 
-        // Seleccionar los 9 países con más inmigraciones en 2022
+        // Selecciono los 9 países con más inmigraciones en 2022
         const top9Countries = summed2022.slice(0, 9);
 
-        // Filtrar los datos para esos 9 países y para los años 2015-2022
+        // Filtro los datos para esos 9 países y para los años 2015-2022
         const selectedCountries = top9Countries.map(d => d.key);
         const filteredTop9Data = filteredData.filter(d => selectedCountries.includes(d[yColumn]) && d.year >= 2015 && d.year <= 2022);
 
-        // Agrupar los datos por país y año
+        // Agrupo los datos por país y año
         const groupedData = d3.group(filteredTop9Data, d => d[yColumn], d => d.year);
 
         // Configuración del gráfico
@@ -2524,7 +2524,7 @@ export function renderSmallMultipleLineplot(containerId, dataSource = "inmigraci
             width = 270 - margin.left - margin.right,
             height = 250 - margin.top - margin.bottom;
 
-        // Añadir un título general al contenedor principal
+        // Añado un título general al contenedor principal
         container.append("svg")
             .attr("width", 1000) // Ajusta el ancho según sea necesario
             .attr("height", 50) // Altura para el título
@@ -2536,7 +2536,7 @@ export function renderSmallMultipleLineplot(containerId, dataSource = "inmigraci
             .style("font-weight", "bold")
             .text("Evolución de inmigraciones de los 9 países con más inmigraciones en 2022");
 
-        // Crear SVG para cada gráfico pequeño
+        // Creamos SVG para cada gráfico pequeño
         const svgContainer = container.selectAll("svg.graph")
             .data(top9Countries)
             .enter()
@@ -2561,7 +2561,7 @@ export function renderSmallMultipleLineplot(containerId, dataSource = "inmigraci
         // Paleta de colores
         const color = d3.scaleOrdinal(d3[colorScheme]);
         
-        // Dibujar líneas para cada país
+        // Dibujamos líneas para cada país
         svgContainer.each(function(d) {
             const svg = d3.select(this);
             const countryData = Array.from(groupedData.get(d.key) || [], ([year, values]) => ({
@@ -2576,18 +2576,18 @@ export function renderSmallMultipleLineplot(containerId, dataSource = "inmigraci
                     .ticks(5) // Número de marcas en el eje
                     .tickFormat(d3.format("d")) // Formato para números enteros sin comas
                 )
-                .selectAll("text") // Seleccionar los textos de las marcas
+                .selectAll("text") // Selecciono los textos de las marcas
                 .attr("transform", "rotate(-90)") // Rotar 90 grados hacia la izquierda
                 .style("text-anchor", "end") // Alinear el texto al final para que no se superponga
                 .attr("dy", "15px") // Mover hacia abajo para separar del eje
                 .attr("dx", "-10px") // Mover hacia abajo para separar del eje
-                .style("font-size", "12px"); // Opcional: ajustar el tamaño del texto
+                .style("font-size", "12px"); // Opcional: Ajustamos el tamaño del texto
 
             // Eje Y
             svg.append("g")
                 .call(d3.axisLeft(y).ticks(5));
 
-            // Dibujar la línea para cada país
+            // Dibujamos la línea para cada país
             svg.append("path")
                 .attr("fill", "none")
                 .attr("stroke", color(d.key))
@@ -2599,7 +2599,7 @@ export function renderSmallMultipleLineplot(containerId, dataSource = "inmigraci
                         (countryData);
                 });
 
-            // Añadir el nombre del país
+            // Añado el nombre del país
             svg.append("text")
                 .attr("text-anchor", "start")
                 .attr("y", -5)
@@ -2803,11 +2803,11 @@ export async function renderLinePlotold(containerId, xColumn = "year", yColumn =
             //.style("stroke-width", 2)
             .style("fill", "none");
 
-        // Añadir etiqueta solo para Ukraine
+        // Añado etiqueta solo para Ukraine
         svg.selectAll(".line-label")
-        .data(d3.group(dataReady, d => d.country)) // Agrupar datos por país
+        .data(d3.group(dataReady, d => d.country)) // Agrupo datos por país
         .enter()
-        .filter(([country]) => country === "Ukraine" || country === "Russian Federation") // Filtrar solo Ukraine
+        .filter(([country]) => country === "Ukraine" || country === "Russian Federation") // Filtro solo Ukraine
         .append("text")
         .datum(([country, values]) => ({
             country: country,
@@ -2848,7 +2848,7 @@ export async function renderLinePlotold(containerId, xColumn = "year", yColumn =
 
 export function renderSankey(containerId, dataSource = "inmigracion", source = "country_birth_sub-region", target = "reporting_country_name", filtroregionsource = 'Africa', colorScheme = "schemeCategory10", maxNodes = 50) {
     const container = d3.select(containerId);
-    container.html(''); // Limpiar contenedor antes de agregar el gráfico
+    container.html(''); // Limpiar contenedor antes de Agrego el gráfico
 
     getCachedData().then(data => {
         let chartData;
@@ -2869,19 +2869,19 @@ export function renderSankey(containerId, dataSource = "inmigracion", source = "
             return;
         }
 
-        // Filtrar "UNKNOWN" y "Other" y limitar a África y año 2022
+        // Filtro "UNKNOWN" y "Other" y limitar a África y año 2022
         const filteredData = chartData.filter(d => d[source] !== "UNKNOWN" && d[target] !== "UNKNOWN" && d[source] !== "Other" && d[target] !== "Other"
             && d["country_birth_region"] === filtroregionsource
             && d["country_birth"] !== "US" && d["country_birth"] !== "IN"
             && d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU");
 
-        // Filtramos los datos para obtener solo las inmigraciones en 2022
+        // Filtramos los datos para Obtengo solo las inmigraciones en 2022
         const filtered2022 = filteredData.filter(d => d.year === 2022);
 
-        // Crear el gráfico de nodos y enlaces
+        // Creamos el gráfico de nodos y enlaces
         const graph = { nodes: [], links: [] };
 
-        // Agrupar y filtrar datos antes de crear nodos y enlaces
+        // Agrupo y Filtro datos antes de Creamos nodos y enlaces
         filtered2022.forEach(d => {
             graph.nodes.push({ name: d[source] });
             graph.nodes.push({ name: d[target] });
@@ -2901,19 +2901,19 @@ export function renderSankey(containerId, dataSource = "inmigracion", source = "
             d.target = graph.nodes.findIndex(node => node.name === d.target);
         });
 
-        // Definir las dimensiones del gráfico y márgenes
+        // Definimos las dimensiones del gráfico y márgenes
         const margin = { top: 50, right: 20, bottom: 20, left: 50 },
             width = 800 - margin.left - margin.right,
             height = 600 - margin.top - margin.bottom;
 
-        // Crear el SVG y agregar el título
+        // Creamos el SVG y Agrego el título
         const svg = container.append("svg")
             .attr("width", width + margin.left + margin.right)  // Asegúrate de incluir los márgenes en el tamaño total
             .attr("height", height + margin.top + margin.bottom)  // Incluir márgenes también
             .style("display", "block")  // Hace que el SVG se vea como bloque y ocupe el espacio disponible
             .style("margin", "0 auto")  // Centra el SVG en el contenedor
 
-        // Agregar el título (fuera del área del gráfico)
+        // Agrego el título (fuera del área del gráfico)
         svg.append("text")
             .attr("x", (width + margin.left + margin.right) / 2)
             .attr("y", margin.top / 2)  // Colocar el título fuera del área del gráfico
@@ -2934,7 +2934,7 @@ export function renderSankey(containerId, dataSource = "inmigracion", source = "
             links: graph.links  // Usar todos los enlaces
         });
 
-        // Crear escala de colores para los enlaces basada en el país de destino
+        // Creamos escala de colores para los enlaces basada en el país de destino
         const colorScale = d3.scaleOrdinal(d3[colorScheme]);
 
         // Optimización de los enlaces
@@ -2949,7 +2949,7 @@ export function renderSankey(containerId, dataSource = "inmigracion", source = "
             .style("stroke", d => colorScale(d.target.name))  // Color según el reporting_country_name
             .style("opacity", 0.5);
 
-        // Ajustar las posiciones de los enlaces para incluir márgenes
+        // Ajustamos las posiciones de los enlaces para incluir márgenes
         link.attr("transform", `translate(${margin.left}, ${margin.top})`);
 
         // Optimización de los nodos
@@ -2982,7 +2982,7 @@ export function renderSankey(containerId, dataSource = "inmigracion", source = "
 
 export function renderChord_example(containerId) {
     const container = d3.select(containerId);
-    container.html(''); // Limpiar el contenedor antes de agregar el gráfico
+    container.html(''); // Limpiar el contenedor antes de Agrego el gráfico
 
     // Dimensiones del SVG
     const width = 440;
@@ -2999,7 +2999,7 @@ export function renderChord_example(containerId) {
     
     const colors = ["#440154ff", "#31668dff", "#37b578ff", "#fde725ff"];
     
-    // Crear el contenedor SVG
+    // Creamos el contenedor SVG
     const svg = container
         .append("svg")
         .attr("width", width)
@@ -3007,13 +3007,13 @@ export function renderChord_example(containerId) {
         .append("g")
         .attr("transform", `translate(${width / 2},${height / 2})`);
 
-    // Calcular el diagrama de acordes
+    // Calculo el diagrama de acordes
     const res = d3.chord()
         .padAngle(0.05) // Espaciado entre grupos
         .sortSubgroups(d3.descending) // Ordenar subgrupos descendentes
         (matrix);
 
-    // Agregar los grupos en la parte externa del círculo
+    // Agrego los grupos en la parte externa del círculo
     const group = svg
         .datum(res)
         .append("g")
@@ -3029,7 +3029,7 @@ export function renderChord_example(containerId) {
             .outerRadius(outerRadius)
         );
 
-    // Agregar los enlaces entre grupos
+    // Agrego los enlaces entre grupos
     svg
         .datum(res)
         .append("g")
@@ -3045,7 +3045,7 @@ export function renderChord_example(containerId) {
 
 export function renderChord21(containerId, dataSource = "inmigracion", source = "country_birth_sub-region", target = "reporting_country_name", filtroregionsource = 'Africa', colorScheme = "schemeCategory10", maxNodes = 50) {
     const container = d3.select(containerId);
-    container.html(''); // Limpiar contenedor antes de agregar el gráfico
+    container.html(''); // Limpiar contenedor antes de Agrego el gráfico
 
     getCachedData().then(data => {
         let chartData;
@@ -3066,16 +3066,16 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
             return;
         }
 
-        // Filtrar "UNKNOWN" y "Other" y limitar a África y año 2022
+        // Filtro "UNKNOWN" y "Other" y limitar a África y año 2022
         const filteredData = chartData.filter(d => d[source] !== "UNKNOWN" && d[target] !== "UNKNOWN" && d[source] !== "Other" && d[target] !== "Other"
             && d["country_birth_region"] === filtroregionsource
             && d["country_birth"] !== "US" && d["country_birth"] !== "IN"
             && d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU");
 
-        // Filtramos los datos para obtener solo las inmigraciones en 2022
+        // Filtramos los datos para Obtengo solo las inmigraciones en 2022
         const filtered2022 = filteredData.filter(d => d.year === 2022);
 
-        // Crear la matriz de migración (matriz de origen y destino)
+        // Creamos la matriz de migración (matriz de origen y destino)
         const nodes = Array.from(new Set([
             ...filtered2022.map(d => d[source]),
             ...filtered2022.map(d => d[target])
@@ -3091,7 +3091,7 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
             }
         });
 
-        // Definir las dimensiones del gráfico y márgenes
+        // Definimos las dimensiones del gráfico y márgenes
         const margin = { top: 50, right: 20, bottom: 20, left: 50 },
             width = 800 - margin.left - margin.right,
             height = 800 - margin.top - margin.bottom;
@@ -3103,7 +3103,7 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
             .style("display", "block")
             .style("margin", "0 auto");
 
-        // Agregar el título (fuera del área del gráfico)
+        // Agrego el título (fuera del área del gráfico)
         svg.append("text")
             .attr("x", (width + margin.left + margin.right) / 2)
             .attr("y", margin.top / 2)
@@ -3112,7 +3112,7 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
             .style("font-weight", "bold")
             .text(`Inmigración desde ${filtroregionsource} a Europa (2022)`);
 
-        // Calcular el diagrama de acordes
+        // Calculo el diagrama de acordes
         const chord = d3.chord()
             .padAngle(0.05)
             .sortSubgroups(d3.descending)
@@ -3121,7 +3121,7 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
         const innerRadius = Math.min(width, height) / 2 - 40;
         const outerRadius = innerRadius + 10;
 
-        // Crear el contenedor para el gráfico
+        // Creamos el contenedor para el gráfico
         const g = svg
             .append("g")
             .attr("transform", `translate(${width / 2},${height / 2})`);
@@ -3129,7 +3129,7 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
         // Colores para los nodos y enlaces
         const colorScale = d3.scaleOrdinal(d3[colorScheme]);
 
-        // Agregar los grupos (nodos)
+        // Agrego los grupos (nodos)
         const group = g
             .datum(chord)
             .append("g")
@@ -3145,7 +3145,7 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
                 .outerRadius(outerRadius)
             );
 
-        // Agregar etiquetas a los grupos
+        // Agrego etiquetas a los grupos
         group.append("text")
             .attr("x", d => (outerRadius + innerRadius) / 2 * Math.cos((d.startAngle + d.endAngle) / 2))
             .attr("y", d => (outerRadius + innerRadius) / 2 * Math.sin((d.startAngle + d.endAngle) / 2))
@@ -3155,7 +3155,7 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
             .style("fill", "black")
             .text((d, i) => nodes[i]);  // Mostrar el nombre del nodo (subregión o país)
 
-        // Agregar los enlaces entre los grupos
+        // Agrego los enlaces entre los grupos
         g
             .datum(chord)
             .append("g")
@@ -3173,7 +3173,7 @@ export function renderChord21(containerId, dataSource = "inmigracion", source = 
 
 export function renderChord(containerId, dataSource = "inmigracion", source = "country_birth_sub-region", target = "reporting_country_name", filtroregionsource = 'Africa', colorScheme = "schemeCategory10", maxNodes = 50) { 
     const container = d3.select(containerId);
-    container.html(''); // Limpiar contenedor antes de agregar el gráfico
+    container.html(''); // Limpiar contenedor antes de Agrego el gráfico
 
     getCachedData().then(data => {
         let chartData;
@@ -3194,16 +3194,16 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
             return;
         }
 
-        // Filtrar "UNKNOWN" y "Other" y limitar a África y año 2022
+        // Filtro "UNKNOWN" y "Other" y limitar a África y año 2022
         const filteredData = chartData.filter(d => d[source] !== "UNKNOWN" && d[target] !== "UNKNOWN" && d[source] !== "Other" && d[target] !== "Other"
             && d["country_birth_region"] === filtroregionsource
             && d["country_birth"] !== "US" && d["country_birth"] !== "IN"
             && d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU");
 
-        // Filtramos los datos para obtener solo las inmigraciones en 2022
+        // Filtramos los datos para Obtengo solo las inmigraciones en 2022
         const filtered2022 = filteredData.filter(d => d.year === 2022);
 
-        // Crear la matriz de migración (matriz de origen y destino)
+        // Creamos la matriz de migración (matriz de origen y destino)
         const nodes = Array.from(new Set([
             ...filtered2022.map(d => d[source]),
             ...filtered2022.map(d => d[target])
@@ -3219,7 +3219,7 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
             }
         });
 
-        // Definir las dimensiones del gráfico y márgenes
+        // Definimos las dimensiones del gráfico y márgenes
         const margin = { top: 50, right: 150, bottom: 20, left: 50 },
             width = 800 - margin.left - margin.right,
             height = 800 - margin.top - margin.bottom;
@@ -3231,7 +3231,7 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
             .style("display", "block")
             .style("margin", "0 auto");
 
-        // Agregar el título (fuera del área del gráfico)
+        // Agrego el título (fuera del área del gráfico)
         const title = svg.append("text")
             .attr("x", (width + margin.left + margin.right) / 2)
             .attr("y", margin.top / 2)
@@ -3240,7 +3240,7 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
             .style("font-weight", "bold")
             .text(`Inmigración desde ${filtroregionsource} a Europa (2022)`);
 
-        // Calcular el diagrama de acordes
+        // Calculo el diagrama de acordes
         const chord = d3.chord()
             .padAngle(0.05)
             .sortSubgroups(d3.descending)
@@ -3249,7 +3249,7 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
         const innerRadius = Math.min(width, height) / 2 - 40;
         const outerRadius = innerRadius + 10;
 
-        // Crear el contenedor para el gráfico
+        // Creamos el contenedor para el gráfico
         const g = svg
             .append("g")
             .attr("transform", `translate(${width / 2},${height / 2})`);
@@ -3265,13 +3265,13 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
             "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "Slovenia", "Spain", "Sweden"
         ];
 
-        // Filtrar los nodos para solo incluir los países de destino permitidos
+        // Filtro los nodos para solo incluir los países de destino permitidos
         const filteredNodes = nodes.filter(node => allowedCountries.includes(node));
 
         // Creamos un objeto para guardar los colores de los nodos (países)
         const nodeColors = {};
 
-        // Crear los grupos (nodos) y asignar colores a cada uno
+        // Creamos los grupos (nodos) y asignar colores a cada uno
         const group = g
             .datum(chord)
             .append("g")
@@ -3291,7 +3291,7 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
                 .outerRadius(outerRadius)
             );
 
-        // Agregar los enlaces entre los grupos (flujos)
+        // Agrego los enlaces entre los grupos (flujos)
         const ribbons = g
             .datum(chord)
             .append("g")
@@ -3318,7 +3318,7 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
             title.text(`Inmigración desde ${filtroregionsource} a Europa (2022)`); // Restaurar el título original al salir del hover
         });
 
-        // Crear la leyenda, solo mostrando los países de destino permitidos
+        // Creamos la leyenda, solo mostrando los países de destino permitidos
         const legendData = filteredNodes.map((node, i) => ({
             label: node,  // El nombre del país o la subregión
             color: nodeColors[node]  // Usar el color guardado para ese país
@@ -3353,7 +3353,7 @@ export function renderChord(containerId, dataSource = "inmigracion", source = "c
 
 export function renderTreemap(containerId, dataSource = "inmigracion", maxNodes = 50, colorScheme = "schemeCategory10") {
     const container = d3.select(containerId);
-    container.html(''); // Limpiar contenedor antes de agregar el gráfico
+    container.html(''); // Limpiar contenedor antes de Agrego el gráfico
 
     getCachedData().then(data => {
         let chartData;
@@ -3374,7 +3374,7 @@ export function renderTreemap(containerId, dataSource = "inmigracion", maxNodes 
             return;
         }
 
-        // Filtrar los datos para solo mostrar inmigraciones a España y que pertenezcan a Africa
+        // Filtro los datos para solo mostrar inmigraciones a España y que pertenezcan a Africa
         const filteredData = chartData.filter(d => d["reporting_country_name"] === "Spain" && d["country_birth_region"] === "Africa");
 
         // Verificar si hay datos después del filtro
@@ -3383,10 +3383,10 @@ export function renderTreemap(containerId, dataSource = "inmigracion", maxNodes 
             return;
         }
 
-        // Crear la jerarquía de datos
+        // Creamos la jerarquía de datos
         const hierarchyData = createHierarchy(filteredData);
 
-        // Crear un nodo raíz único para envolver la jerarquía
+        // Creamos un nodo raíz único para envolver la jerarquía
         const root = {
             key: "root", // Nodo raíz
             children: hierarchyData
@@ -3426,7 +3426,7 @@ export function renderTreemap(containerId, dataSource = "inmigracion", maxNodes 
             .padding(4)
             (stratifiedRoot);
 
-        // Crear los rectángulos para el treemap
+        // Creamos los rectángulos para el treemap
         svg
             .selectAll("rect")
             .data(stratifiedRoot.leaves())
@@ -3439,14 +3439,14 @@ export function renderTreemap(containerId, dataSource = "inmigracion", maxNodes 
             .style("stroke", "black")
             .style("fill", d => colorScale(d.data.key));  // Usamos colorScale para cada subgrupo
 
-        // Añadir las etiquetas de texto en los rectángulos
+        // Añado las etiquetas de texto en los rectángulos
         svg
             .selectAll("text")
             .data(stratifiedRoot.leaves())
             .enter()
             .append("text")
-            .attr("x", d => d.x0 + 10)    // Ajustar la posición del texto
-            .attr("y", d => d.y0 + 20)    // Ajustar la posición del texto
+            .attr("x", d => d.x0 + 10)    // Ajustamos la posición del texto
+            .attr("y", d => d.y0 + 20)    // Ajustamos la posición del texto
             .text(d => d.data.key)
             .attr("font-size", "15px")
             .attr("fill", "white");
@@ -3454,9 +3454,9 @@ export function renderTreemap(containerId, dataSource = "inmigracion", maxNodes 
     }).catch(error => console.error('Error al cargar los datos:', error));
 }
 
-// Función auxiliar para crear la jerarquía a partir de los datos filtrados
+// Función auxiliar para Creamos la jerarquía a partir de los datos filtrados
 function createHierarchy(filteredData) {
-    // Usamos d3.group para agrupar los datos por subregión y país
+    // Usamos d3.group para Agrupo los datos por subregión y país
     const hierarchy = d3.group(filteredData, 
         d => d["country_birth_sub-region"],  // Agrupamos por sub-región
         d => d["country_birth_name"]         // Agrupamos por país
@@ -3482,7 +3482,7 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
     container.html(''); // Limpiar el contenedor antes de renderizar
 
     getCachedData().then(data => {
-        // Filtrar y agrupar los datos
+        // Filtro y Agrupo los datos
         const chartData = data.inmigration.withoutTotal;
         const filteredData = chartData.filter(d =>
             d[groupColumn] !== "UNKNOWN" && d[groupColumn] !== "Other" && d[groupColumn] !== "Todas" &&
@@ -3493,7 +3493,7 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
         const groupedData = d3.rollup(
             filteredData,
             v => d3.sum(v, d => +d[yColumn]), // Sumar los valores de la columna especificada
-            d => d[groupColumn] // Agrupar por la columna especificada
+            d => d[groupColumn] // Agrupo por la columna especificada
         );
 
         // Convertir a un formato adecuado para d3.pie
@@ -3505,7 +3505,7 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
               margin = 150; // Margen amplio para centrar mejor
         const radius = Math.min(width, height) / 2 - margin;
 
-        // Crear el SVG con un margen explícito
+        // Creamos el SVG con un margen explícito
         const svg = container
             .append("svg")
             .attr("width", width + margin * 2) // Ancho con margen adicional
@@ -3533,11 +3533,11 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
             .innerRadius(radius * 1.4) // Aumentar distancia para las líneas
             .outerRadius(radius * 1.4);
 
-        // Calcular el total de valores para filtrar etiquetas pequeñas
+        // Calculo el total de valores para Filtro etiquetas pequeñas
         const totalValue = d3.sum(dataEntries, d => d.value);
         const threshold = 0.02 * totalValue; // 2% del total
 
-        // Dibujar los segmentos
+        // Dibujamos los segmentos
         svg
             .selectAll('allSlices')
             .data(data_ready)
@@ -3548,7 +3548,7 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
             .style("stroke-width", "2px")
             .style("opacity", 0.9);
 
-        // Añadir líneas entre el gráfico y las etiquetas
+        // Añado líneas entre el gráfico y las etiquetas
         svg
             .selectAll('allPolylines')
             .data(data_ready)
@@ -3566,7 +3566,7 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
                 return [posA, posB, posC];
             });
 
-        // Añadir etiquetas para regiones con valores mayores al umbral
+        // Añado etiquetas para regiones con valores mayores al umbral
         svg
             .selectAll('allLabels')
             .data(data_ready)
@@ -3586,7 +3586,7 @@ export function renderDonought(containerId, yColumn = "inmigrations", groupColum
             })
             .style("font-weight", "bold");
 
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", 0)
             .attr("y", -height / 2 + margin / 3)
@@ -3604,7 +3604,7 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
     container.html(''); // Limpiar el contenedor antes de renderizar
 
     getCachedData().then(data => {
-        // Filtrar y agrupar los datos
+        // Filtro y Agrupo los datos
         const chartData = data.inmigration.withoutTotal;
         const filteredData = chartData.filter(d =>
             d[groupColumn] !== "UNKNOWN" && d[groupColumn] !== "Other" && d[groupColumn] !== "Todas" &&
@@ -3612,11 +3612,11 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
             d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU" && d["country_birth_name"] !== "Europe"
         );
 
-        // Agrupar datos y sumar por la columna especificada
+        // Agrupo datos y sumar por la columna especificada
         const groupedData = d3.rollup(
             filteredData,
             v => d3.sum(v, d => +d[yColumn]), // Sumar los valores de la columna especificada
-            d => d[groupColumn] // Agrupar por la columna especificada
+            d => d[groupColumn] // Agrupo por la columna especificada
         );
 
         // Convertir a lista, ordenar por valor y tomar los Top 20
@@ -3630,11 +3630,11 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
               margin = 100; // Margen amplio para centrar mejor
         const radius = Math.min(width, height) / 2 - margin;
 
-        // Crear el SVG con un margen explícito
+        // Creamos el SVG con un margen explícito
         const svg = container
             .append("svg")
-            .attr("width", width + margin * 4) // Agregar margen al ancho total
-            .attr("height", height + margin * 2) // Agregar margen al alto total
+            .attr("width", width + margin * 4) // Agrego margen al ancho total
+            .attr("height", height + margin * 2) // Agrego margen al alto total
             .append("g")
             .attr("transform", `translate(${(width + margin * 2) / 2 + margin},${(height + margin * 2) / 2})`);
 
@@ -3658,7 +3658,7 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
             .innerRadius(radius * 1.1)
             .outerRadius(radius * 1.1);
 
-        // Dibujar los segmentos
+        // Dibujamos los segmentos
         svg
             .selectAll('allSlices')
             .data(data_ready)
@@ -3669,11 +3669,11 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
             .style("stroke-width", "2px")
             .style("opacity", 0.9);
 
-        // Calcular el total de valores para filtrar etiquetas pequeñas
+        // Calculo el total de valores para Filtro etiquetas pequeñas
         const totalValue = d3.sum(sortedData, d => d.value);
         const threshold = 0.02 * totalValue; // 2% del total
 
-        // Añadir líneas entre el gráfico y las etiquetas
+        // Añado líneas entre el gráfico y las etiquetas
         svg
             .selectAll('allPolylines')
             .data(data_ready)
@@ -3691,7 +3691,7 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
                 return [posA, posB, posC];
             });
 
-        // Añadir etiquetas para regiones con valores mayores al umbral
+        // Añado etiquetas para regiones con valores mayores al umbral
         svg
             .selectAll('allLabels')
             .data(data_ready)
@@ -3711,7 +3711,7 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
             })
             .style("font-weight", "bold");
 
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", 0)
             .attr("y", -radius - margin )
@@ -3725,10 +3725,10 @@ export function renderDonoughtDrill(containerId, yColumn = "inmigrations", group
 
 export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yColumn = "inmigrations", xColumn = "year", groupColumn = "sex", colorScheme = "schemeCategory10") {
     const container = d3.select(containerId);
-    container.html(''); // Limpiar el contenedor antes de agregar el gráfico
+    container.html(''); // Limpiar el contenedor antes de Agrego el gráfico
 
     getCachedData().then(data => {
-        // Seleccionar el conjunto de datos según el parámetro dataSource
+        // Selecciono el conjunto de datos según el parámetro dataSource
         let chartData;
         switch (dataSource) {
             case 'emigracion':
@@ -3747,18 +3747,18 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
             return;
         }
 
-        // Filtrar los datos para eliminar registros no deseados
+        // Filtramos los datos para eliminar registros no deseados
         const filteredData = chartData.filter(d =>
             d[groupColumn] !== "UNKNOWN" && d[groupColumn] !== "Other" && d[groupColumn] !== "Todas" &&
             d["country_birth"] !== "US" && d["country_birth"] !== "IN" &&
             d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU" && d["country_birth_name"] !== "Europe"
         );
 
-        // Obtener los valores únicos de los años (xColumn) y sexos (groupColumn)
+        // Obtengo los valores únicos de los años (xColumn) y sexos (groupColumn)
         const years = Array.from(new Set(filteredData.map(d => d[xColumn])));
         const sexes = Array.from(new Set(filteredData.map(d => d[groupColumn])));
 
-        // Agrupar por año y sexo
+        // Agrupo por año y sexo
         const groupedData = d3.rollup(
             filteredData,
             v => d3.sum(v, d => +d[yColumn]), 
@@ -3771,7 +3771,7 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
        width = 800 - margin.left - margin.right,
        height = 600 - margin.top - margin.bottom;
 
-        // Crear el SVG
+        // Creamos el SVG
         const svg = container.append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -3820,7 +3820,7 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
             .data(d => sexes.map(sex => ({
                 sex,
                 year: d,
-                value: groupedData.get(d)?.get(sex) || 0 // Obtener valor agrupado
+                value: groupedData.get(d)?.get(sex) || 0 // Obtengo valor agrupado
             })))
             .enter().append("rect")
             .attr("x", d => xSubgroup(d.sex))
@@ -3829,7 +3829,7 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
             .attr("height", d => height - y(d.value))
             .attr("fill", d => color(d.sex));
         
-        // Añadir título al gráfico
+        // título al gráfico
         svg.append("text")
             .attr("x", width / 2) // Centrar horizontalmente
             .attr("y", -20) // Posición vertical arriba del gráfico
@@ -3838,7 +3838,7 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
             .style("font-weight", "bold")
             .text("Ranking de inmigración por año y región");
 
-        // Añadir leyenda
+        // leyenda
         const legend = svg.append("g")
             .attr("transform", `translate(${width + 20}, 20)`);
 
@@ -3865,10 +3865,10 @@ export function renderGroupedBarplot(containerId, dataSource = "inmigracion", yC
 
 export function renderStackedBarplot(containerId, dataSource = "inmigracion", yColumn = "inmigrations", xColumn = "year", groupColumn = "country_birth_region", colorScheme = "schemeCategory10") {
     const container = d3.select(containerId);
-    container.html(''); // Limpiar el contenedor antes de agregar el gráfico
+    container.html(''); // Limpio el contenedor antes de Agrego el gráfico
 
     getCachedData().then(data => {
-        // Seleccionar el conjunto de datos según el parámetro dataSource
+        // Seleccionams el conjunto de datos según el parámetro dataSource
         let chartData;
         switch (dataSource) {
             case 'emigracion':
@@ -3887,18 +3887,18 @@ export function renderStackedBarplot(containerId, dataSource = "inmigracion", yC
             return;
         }
 
-        // Filtrar los datos para eliminar registros no deseados
+        // Filtro los datos para eliminar registros no deseados
         const filteredData = chartData.filter(d =>
             d[groupColumn] !== "UNKNOWN" && d[groupColumn] !== "Other" && d[groupColumn] !== "Todas" &&
             d["country_birth"] !== "US" && d["country_birth"] !== "IN" &&
             d["country_birth"] !== "EFTA_FOR" && d["country_birth"] !== "RU" && d["country_birth_name"] !== "Europe"
         );
 
-        // Obtener los valores únicos de los años (xColumn) y regiones (groupColumn)
+        // los valores únicos de los años (xColumn) y regiones (groupColumn)
         const years = Array.from(new Set(filteredData.map(d => d[xColumn])));
         const regions = Array.from(new Set(filteredData.map(d => d[groupColumn])));
 
-        // Agrupar por año y región
+        // Agrupa por año y región
         const groupedData = d3.rollup(
             filteredData,
             v => d3.sum(v, d => +d[yColumn]), 
@@ -3906,7 +3906,7 @@ export function renderStackedBarplot(containerId, dataSource = "inmigracion", yC
             d => d[groupColumn]
         );
 
-        // Transformar los datos para formato apilado
+        // Transformo los datos para formato apilado
         const stackData = years.map(year => {
             const yearData = { year };
             regions.forEach(region => {
@@ -3920,7 +3920,7 @@ export function renderStackedBarplot(containerId, dataSource = "inmigracion", yC
             width = 800 - margin.left - margin.right,
             height = 600 - margin.top - margin.bottom;
 
-        // Crear el SVG
+        // Creamos el SVG
         const svg = container.append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -3952,13 +3952,13 @@ export function renderStackedBarplot(containerId, dataSource = "inmigracion", yC
         // Escala de color para las categorías de región
         const color = d3.scaleOrdinal(d3[colorScheme]).domain(regions);
 
-        // Crear el stack generator
+        // Creamos el stack generator
         const stack = d3.stack()
             .keys(regions);
 
         const series = stack(stackData);
 
-        // Dibujar las barras apiladas
+        // Dibujamos las barras apiladas
         svg.append("g")
             .selectAll("g")
             .data(series)
@@ -3974,7 +3974,7 @@ export function renderStackedBarplot(containerId, dataSource = "inmigracion", yC
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth());
 
-        // Añadir título al gráfico
+        // Añado título al gráfico
         svg.append("text")
             .attr("x", width / 2) // Centrar horizontalmente
             .attr("y", -20) // Posición vertical arriba del gráfico
@@ -3983,7 +3983,7 @@ export function renderStackedBarplot(containerId, dataSource = "inmigracion", yC
             .style("font-weight", "bold")
             .text("Ranking de inmigración por año y región");
 
-        // Añadir leyenda
+        // Añado leyenda
         const legend = svg.append("g")
             .attr("transform", `translate(${width + 20}, 20)`);
 
@@ -4086,7 +4086,7 @@ export function renderGroupedBarplotEjemplo(containerId) {
                 .selectAll("rect")
                 .data(function(d) {
                     return subgroups.map(function(key) {
-                        return { key: key, value: d[key] }; // Agregar el valor de la columna correspondiente a cada subgrupo
+                        return { key: key, value: d[key] }; // Agrego el valor de la columna correspondiente a cada subgrupo
                     });
                 })
                 .enter().append("rect")
@@ -4102,10 +4102,10 @@ export function renderGroupedBarplotEjemplo(containerId) {
 
     export function renderBarplotDinamicoVertical(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "year", groupedColumn="sex", colorScheme = "schemeCategory10") {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
-            // Seleccionar el conjunto de datos según el parámetro dataSource
+            // Selecciono el conjunto de datos según el parámetro dataSource
             let chartData;
             switch (dataSource) {
                 case 'emigracion':
@@ -4136,7 +4136,7 @@ export function renderGroupedBarplotEjemplo(containerId) {
                   width = 800 - margin.left - margin.right,
                   height = 600 - margin.top - margin.bottom;
     
-            // Crear SVG
+            // Creamos SVG
             const svg = container
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -4179,7 +4179,7 @@ export function renderGroupedBarplotEjemplo(containerId) {
                 .attr("height", d => height - y(d[xColumn]))
                 .attr("fill", d => d[yColumn] === yearWithMaxInmigrations ? "red" : "gray"); // Colorear de rojo el año con el valor máximo, los demás de gris
     
-            // Añadir título al gráfico
+            // Añado título al gráfico
             svg.append("text")
                 .attr("x", width / 2)
                 .attr("y", -10)
@@ -4199,7 +4199,7 @@ export function renderGroupedBarplotEjemplo(containerId) {
     colorScheme = "schemeCategory10"
 ) {
     const container = d3.select(containerId);
-    container.html(''); // Limpiar contenedor antes de agregar el gráfico
+    container.html(''); // Limpiar contenedor antes de Agrego el gráfico
 
     getCachedData().then(data => {
         let chartData;
@@ -4215,14 +4215,14 @@ export function renderGroupedBarplotEjemplo(containerId) {
                 return;
         }
 
-        // Filtrar valores inválidos
+        // Filtro valores inválidos
         const filteredData = chartData.filter(d => d[xColumn] !== "UNKNOWN" && d[xColumn] !== "Other");
         if (!filteredData.length) {
             console.error('No se encontraron datos válidos después del filtrado.');
             return;
         }
 
-        // Obtener las claves para stackedData
+        // Obtengo las claves para stackedData
         const keys = [...new Set(filteredData.map(d => d[groupedColumn]))];
 
         // Reestructurar datos para apilado
@@ -4266,7 +4266,7 @@ export function renderGroupedBarplotEjemplo(containerId) {
 
         const color = d3.scaleOrdinal(d3[colorScheme]);
 
-        // Dibujar barras apiladas
+        // Dibujamos barras apiladas
         g.selectAll("g")
             .data(stackedData)
             .join("g")
@@ -4299,7 +4299,7 @@ export function renderGroupedBarplotEjemplo(containerId) {
         colorScheme = "schemeCategory10"
     ) {
         const container = d3.select(containerId);
-        container.html(''); // Limpiar contenedor antes de agregar el gráfico
+        container.html(''); // Limpiar contenedor antes de Agrego el gráfico
     
         getCachedData().then(data => {
             let chartData;
@@ -4377,12 +4377,12 @@ export function renderGroupedBarplotEjemplo(containerId) {
     
     
 export function renderBarplotDinamicoVerticalStacked2(containerId, dataSource = "inmigracion", xColumn = "inmigrations", yColumn = "year", groupedColumn = "sex", colorScheme = "schemeCategory10") {    
-        // Establecer las dimensiones y márgenes del gráfico
+        // Establezco las dimensiones y márgenes del gráfico
         const margin = {top: 10, right: 30, bottom: 40, left: 50},
               width = 460 - margin.left - margin.right,
               height = 400 - margin.top - margin.bottom;
     
-        // Agregar el objeto svg al contenedor de la página
+        // Agrego el objeto svg al contenedor de la página
         const svg = d3.select(containerId)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -4390,7 +4390,7 @@ export function renderBarplotDinamicoVerticalStacked2(containerId, dataSource = 
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
-        // Obtener los datos desde el origen de datos
+        // Obtengo los datos desde el origen de datos
         d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_stacked.csv").then(data => {
     
             // Listado de subgrupos = los encabezados de la columna después de la primera
@@ -4399,7 +4399,7 @@ export function renderBarplotDinamicoVerticalStacked2(containerId, dataSource = 
             // Listado de grupos = valores de la primera columna llamada 'group' -> los mostramos en el eje X
             const groups = d3.map(data, function(d) { return d.group; }).keys();
     
-            // Añadir el eje X
+            // Añado el eje X
             const x = d3.scaleBand()
                 .domain(groups)
                 .range([0, width])
@@ -4413,7 +4413,7 @@ export function renderBarplotDinamicoVerticalStacked2(containerId, dataSource = 
                 .style("text-anchor", "middle")
                 .style("angle", "45deg");  // Rotar etiquetas del eje X para que se vean mejor
     
-            // Añadir el eje Y
+            // Añado el eje Y
             const y = d3.scaleLinear()
                 .domain([0, d3.max(data, function(d) { return d3.sum(subgroups, function(key) { return +d[key]; }); })])
                 .range([height, 0]);
@@ -4445,7 +4445,7 @@ export function renderBarplotDinamicoVerticalStacked2(containerId, dataSource = 
                 .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                 .attr("width", x.bandwidth());
     
-            // Añadir título al gráfico
+            // Añado título al gráfico
             svg.append("text")
                 .attr("x", (width + margin.left + margin.right) / 2)  // Centrar el título
                 .attr("y", -20)
@@ -4560,4 +4560,3 @@ export function renderBarplotDinamicoVerticalStacked2(containerId, dataSource = 
             console.error('Error al cargar los datos:', error);
         }
     }
-    

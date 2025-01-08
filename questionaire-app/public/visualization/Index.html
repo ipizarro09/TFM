@@ -91,16 +91,16 @@
         const totalPages = 4;
 
         function showPage(page) {
-            // Actualizar la visualización de las páginas
+            // Actualizacion de la visualización de las páginas
             for (let i = 1; i <= totalPages; i++) {
                 document.getElementById(`page-${i}`).style.display = i === page ? 'flex' : 'none';
             }
 
-            // Actualizar el indicador de página
+            // Actualizacion del indicador de página
             document.getElementById('page-indicator').textContent = `Page ${page}`;
         }
 
-        // Agregar eventos para los botones de navegación
+        // Agregamos eventos para los botones de navegación
         document.getElementById('prev-button').addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -191,7 +191,7 @@
             }
         }
 
-        // Cambiar la vista (Technical o Non-Technical)
+        // Cambios las vistas (Technical o Non-Technical)
         document.getElementById('view-type').addEventListener('change', event => {
             const view = event.target.value;
             const colorScheme = document.getElementById('colorblind-checkbox').checked ? "schemeDark2" : "schemeCategory10";
@@ -202,17 +202,17 @@
         document.getElementById('colorblind-checkbox').addEventListener('change', event => {
             const isChecked = event.target.checked;
             const colorScheme = isChecked ? "schemeDark2" : "schemeCategory10";
-            // Actualizar los componentes con el esquema de colores correspondiente
+            // Actualizo los componentes con el esquema de colores correspondiente
             const currentView = document.getElementById('view-type').value; // Obtener el valor actual de la vista seleccionada
             updatePageComponents(currentView, colorScheme);
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-        // Establecer el valor inicial del selector en "technical"
+        // Establecemos el valor inicial del selector en "technical"
         const viewSelector = document.getElementById('view-type');
         viewSelector.value = 'technical'; // Asegura que el selector inicie en "technical"
 
-        // Inicializar la primera página y los componentes con vista técnica
+        // Inicializacion de la primera página y los componentes con vista técnica
         showPage(currentPage);
         const colorScheme = "schemeCategory10"; // Esquema de colores por defecto
         updatePageComponents('technical', colorScheme);

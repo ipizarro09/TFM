@@ -389,9 +389,9 @@ if __name__ == "__main__":
             'dataset_size',
             'contexto']  # Definir las columnas requeridas
         # prediccion usando modelo entrenado y guardado
-        model_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\XGBOOST_F.sav"
-        encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\feature_encoders.sav"
-        label_encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\label_encoder_y.sav"
+        model_path = r".\recomendador\XGBOOST_F.sav"
+        encoder_path = r".\recomendador\feature_encoders.sav"
+        label_encoder_path = r".\recomendador\label_encoder_y.sav"
         # Cargamos el modelo entrenado con pickle
         loaded_model = pickle.load(open(model_path, 'rb'))
         # Cargamos también los encoders que se usaron para las caracteristicas

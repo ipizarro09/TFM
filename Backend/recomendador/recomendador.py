@@ -20,7 +20,7 @@ def fetch_responses(id):
     )
     cursor = conn.cursor()
 
-    # Obtener datos por ID
+    # Obtenemos las respuestas datos por ID
     cursor.execute("SELECT * FROM respuestas WHERE id = %s", (id,))
     row = cursor.fetchone()
     conn.close()
@@ -345,7 +345,7 @@ def recommend_rule(data):
 
 '''Recomendador IA'''
 
-# Función para sugerir tipo de gráfico
+# Función para sugerir tipo de gráfico for IA
 def recommend_AI(features, modelo, label_encoder_y, encoders, required_columns):
     input_data = []
     for col in required_columns:
@@ -376,7 +376,7 @@ if __name__ == "__main__":
     id = sys.argv[1]  # Obtener el ID de las respuestas desde los argumentos de la línea de comandos
     try:
         responses = fetch_responses(id)
-        # Generamos las dos recomendaciones
+        # obtenemos la recomendacion por reglas según las respuestas del cuestionario que recogemos de la bbdd
         recommendation_rule = recommend_rule(responses)
 
         required_columns = [ 'n_dimensiones' ,
@@ -392,11 +392,12 @@ if __name__ == "__main__":
         model_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\XGBOOST_F.sav"
         encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\feature_encoders.sav"
         label_encoder_path = r"C:\Users\34617\Documents\MASTER_DATA_SCIENCE\TFM\recomendador_AI\label_encoder_y.sav"
-        # Cargar el modelo con pickle
+        # Cargamos el modelo entrenado con pickle
         loaded_model = pickle.load(open(model_path, 'rb'))
-        # Cargar los encoders
+        # Cargamos también los encoders que se usaron para las caracteristicas
         encoders = pickle.load(open(encoder_path, 'rb'))
         label_encoder_y = pickle.load(open(label_encoder_path, 'rb'))
+        # obtenemos la recomendacion por IA según las respuestas del cuestionario que recogemos de la bbdd
         recommendation_ai = recommend_AI(responses,loaded_model, label_encoder_y, encoders, required_columns)
 
         # Empaquetamos ambas recomendaciones en un diccionario
@@ -405,11 +406,10 @@ if __name__ == "__main__":
             "ai_based": recommendation_ai
         }
 
-        # Convertimos el diccionario a JSON y lo imprimimos para enviarlo de vuelta
+        # Convertimos el diccionario a JSON y lo imprimimos para enviarlo de vuelta a node.js
         print(json.dumps(recommendations))
 
-        #recommendation = recommend_rule(responses)
-        #print(recommendation)  # La recomendación será enviada de vuelta a Node.js
+        
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
